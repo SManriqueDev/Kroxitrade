@@ -50,14 +50,16 @@ plasmo-csui {
   animation: pinned-glow-keyframes 1s ease;
 }
 
-.bt-equivalent-pricing {
-  font-size: 11px;
-  color: $gold;
+.bt-equivalent-pricings {
+  display: block;
+  font-size: 15.6px;
+  color: #a38d6d;
   margin-top: 2px;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 2px 4px;
-  border-radius: 2px;
-  display: inline-block;
+  line-height: 1.2;
+}
+
+.bt-equivalent-pricings-equivalent {
+  font-weight: normal;
 }
 
 .bt-highlight-stat-filters {

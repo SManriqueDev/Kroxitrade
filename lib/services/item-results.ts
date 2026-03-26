@@ -29,10 +29,18 @@ export class ItemResultsService {
   private readonly DIVINE_SLUG = "divine-orb";
   private readonly CHAOS_SLUG = "chaos-orb";
   async initialize() {
+    console.log("[Kroxitrade] Initializing ItemResultsService...");
     if (window.location.protocol === "chrome-extension:") {
       return;
     }
-    await this.fetchRatios();
+    
+    try {
+      await this.fetchRatios();
+      console.log("[Kroxitrade] Ratios loaded successfully:", this.chaosRatios ? "YES" : "NO");
+    } catch (e) {
+      console.error("[Kroxitrade] Failed to fetch ratios from poe.ninja:", e);
+    }
+
     this.prepareHighlighting();
     this.startObserving();
   }
@@ -41,46 +49,114 @@ export class ItemResultsService {
 
   private async fetchRatios() {
     const league = tradeLocationService.current.league;
+    console.log("[Kroxitrade] Current league detected:", league);
     if (league) {
         this.chaosRatios = await poeNinjaService.fetchChaosRatiosFor(league);
+    } else {
+        console.warn("[Kroxitrade] No league detected, skipping poe.ninja ratios.");
     }
   }
 
   private injectEquivalentPricing(row: HTMLElement) {
     if (!this.chaosRatios) return;
 
-    const priceContainer = row.querySelector(".price, .details .price") as HTMLElement;
-    if (!priceContainer) return;
+    // Busca explícitamente el div con class "price" como pidió el usuario
+    const priceContainer = row.querySelector("div.price, .details .price") as HTMLElement;
+    if (!priceContainer) {
+        console.debug("[Kroxitrade] Skipping pricing injection - Missing priceContainer for row", row);
+        return;
+    }
 
-    // Official site structure often has nested spans for currency and amount
-    const currencyText = row.querySelector('[data-field="price"] .currency-text span, [data-field="price"] .currency-icon')?.textContent || 
-                       row.querySelector('.currency-text')?.textContent;
-    const amountText = row.querySelector('[data-field="price"] span:last-child, .price span:last-child')?.textContent;
+    // Buscar explícitamente el texto de la moneda
+    const currencyTextTag = row.querySelector('[data-field="price"] .currency-text span, .currency-text span, .currency-text');
+    const currencyText = currencyTextTag?.textContent?.trim() || "";
+                       
+    // Buscar la cantidad: Iterar por todos los nodos hoja para encontrar el primero que sea un número válido
+    let amountText = "";
+    const leafNodes = Array.from(priceContainer.querySelectorAll('span, div'));
+    for (const node of leafNodes) {
+        // Ignorar el nombre de la moneda
+        if (node.classList?.contains("currency-text") || node.closest('.currency-text')) continue;
+        
+        const text = node.textContent?.trim() || "";
+        const match = text.match(/[0-9]+(\.[0-9]+)?/);
+        if (match) {
+            amountText = match[0];
+            break;
+        }
+    }
 
-    if (!currencyText || !amountText) return;
+    const amount = parseFloat(amountText);
+
+    if (!currencyText || isNaN(amount)) {
+        console.debug("[Kroxitrade] Skipping pricing injection - Missing details:", { currency: currencyText, amount: amountText, html: priceContainer.innerHTML });
+        return;
+    }
 
     const slug = slugify(currencyText);
-    const amount = parseFloat(amountText);
     const ratio = this.chaosRatios[slug];
     const divineRatio = this.chaosRatios[this.DIVINE_SLUG];
 
-    if (slug !== this.CHAOS_SLUG && ratio) {
-        const chaosEquiv = Math.round(amount * ratio);
-        this.appendEquiv(priceContainer, `${chaosEquiv}× chaos`);
+    if (slug === this.DIVINE_SLUG && ratio) {
+        // Original price is Divine, e.g. 1.4 Divines
+        const totalChaos = Math.round(amount * ratio);
+        const wholeDivines = Math.floor(amount);
+        const remainderFraction = amount - wholeDivines;
+        const remainderChaos = Math.round(remainderFraction * ratio);
+
+        let htmlSnippet = "";
+        if (wholeDivines > 0 && remainderChaos > 0) {
+            htmlSnippet = this.getCurrencyHtml(wholeDivines, this.DIVINE_SLUG) + 
+                          ` <span style="margin: 0 3px; color: rgba(255,255,255,0.4); font-size: 14px;">+</span> ` + 
+                          this.getCurrencyHtml(remainderChaos, this.CHAOS_SLUG);
+        } else if (wholeDivines === 0 && remainderChaos > 0) {
+            htmlSnippet = this.getCurrencyHtml(remainderChaos, this.CHAOS_SLUG);
+        } else {
+            htmlSnippet = this.getCurrencyHtml(totalChaos, this.CHAOS_SLUG);
+        }
+        this.appendEquivHtml(priceContainer, htmlSnippet);
+
     } else if (slug === this.CHAOS_SLUG && divineRatio && amount >= divineRatio * 0.5) {
-        const divineEquiv = (amount / divineRatio).toFixed(1);
-        this.appendEquiv(priceContainer, `${divineEquiv}× divine`);
+        // Original price is Chaos, e.g. 195 Chaos
+        const wholeDivines = Math.floor(amount / divineRatio);
+        const remainderChaos = Math.round(amount % divineRatio);
+
+        let htmlSnippet = "";
+        if (wholeDivines > 0) {
+            htmlSnippet = this.getCurrencyHtml(wholeDivines, this.DIVINE_SLUG);
+            if (remainderChaos > 0) {
+                htmlSnippet += ` <span style="margin: 0 3px; color: rgba(255,255,255,0.4); font-size: 14px;">+</span> ` + 
+                               this.getCurrencyHtml(remainderChaos, this.CHAOS_SLUG);
+            }
+        } else {
+            // Less than 1 Divine (e.g. 100 chaos). Just show fraction: 0.7 Divine
+            const fraction = (amount / divineRatio).toFixed(1);
+            htmlSnippet = this.getCurrencyHtml(fraction, this.DIVINE_SLUG);
+        }
+        this.appendEquivHtml(priceContainer, htmlSnippet);
+
+    } else if (slug !== this.CHAOS_SLUG && slug !== this.DIVINE_SLUG && ratio) {
+        // Other currencies (like Exalted orbs). Just show total chaos equivalent.
+        const chaosEquiv = Math.round(amount * ratio);
+        this.appendEquivHtml(priceContainer, this.getCurrencyHtml(chaosEquiv, this.CHAOS_SLUG));
+    } else {
+        console.debug(`[Kroxitrade] Could not determine equivalence for ${amountText} ${currencyText} (slug: ${slug})`);
     }
   }
 
-  private appendEquiv(container: HTMLElement, text: string) {
-    const el = document.createElement("div");
-    el.className = "bt-equivalent-pricing";
-    el.style.fontSize = "11px";
-    el.style.color = "#a38d6d";
-    el.style.marginTop = "2px";
-    el.innerHTML = `= ${text}`;
+  private appendEquivHtml(container: HTMLElement, htmlContent: string) {
+    const el = document.createElement("span");
+    el.className = "bt-equivalent-pricings bt-equivalent-pricings-equivalent";
+    el.innerHTML = htmlContent;
     container.appendChild(el);
+  }
+
+  private getCurrencyHtml(amount: number | string, slug: string) {
+    const chaosUrl = "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png?scale=1&w=1&h=1";
+    const divineUrl = "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png?scale=1&w=1&h=1";
+    const iconUrl = slug === this.CHAOS_SLUG ? chaosUrl : divineUrl;
+
+    return `<span>${amount}</span><img src="${iconUrl}" class="currency-icon" style="width: 22px; height: 22px; vertical-align: middle; margin-left: 2px;" alt="${slug}">`;
   }
 
   private prepareHighlighting() {
@@ -88,27 +164,37 @@ export class ItemResultsService {
     this.statNeedles = stats.map(s => new RegExp(escapeRegex(s).replace(/#/g, '[\\+\\-]?\\d+'), 'i'));
   }
 
+  private observerTimer: ReturnType<typeof setTimeout> | null = null;
+
   private startObserving() {
     const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === "childList") {
-          this.enhanceResults();
-        }
-      }
+      if (this.observerTimer) clearTimeout(this.observerTimer);
+      this.observerTimer = setTimeout(() => this.enhanceResults(), 100);
     });
 
-    const target = document.querySelector(".search-results");
+    const target = document.querySelector(".search-results, .resultset, .results");
     if (target) {
+      console.log(`[Kroxitrade] Attached observer to container: ${target.className}`);
       observer.observe(target, { childList: true, subtree: true });
       this.enhanceResults();
     } else {
-      setTimeout(() => this.startObserving(), 1000);
+      // Fallback: observe body but keep trying to find the specific container
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => {
+        observer.disconnect();
+        this.startObserving();
+      }, 2000);
     }
   }
 
   private enhanceResults() {
     // Current trade site uses .result-item, but some pages or versions use .row
-    const results = document.querySelectorAll(".search-results .result-item:not([bt-enhanced]), .search-results .row:not([bt-enhanced]), .result-list .result-item:not([bt-enhanced])");
+    const results = document.querySelectorAll(".search-results .result-item:not([bt-enhanced]), .search-results .row:not([bt-enhanced]), .result-list .result-item:not([bt-enhanced]), .row:not([bt-enhanced])");
+    
+    if (results.length > 0) {
+        console.log(`[Kroxitrade] Enhancing ${results.length} new results...`);
+    }
+
     results.forEach((row: HTMLElement) => {
       row.setAttribute("bt-enhanced", "true");
       this.injectEquivalentPricing(row);
