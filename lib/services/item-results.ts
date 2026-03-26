@@ -4,6 +4,7 @@ import { tradeLocationService } from "./trade-location";
 import { searchPanelService } from "./search-panel";
 import { slugify } from "../utilities/slugify";
 import { escapeRegex } from "../utilities/escape-regex";
+import { storageService } from "./storage";
 
 export interface PinnedItem {
   id: string;
@@ -26,20 +27,51 @@ const ILVL_THRESHOLDS = [
   { maxSockets: 5, ilvl: 49 },
 ];
 
-const { subscribe, update, set } = writable<PinnedItem[]>([]);
+const PINNED_ITEMS_STORAGE_KEY = "pinned-items";
+const pinnedItemsStore = writable<PinnedItem[]>([]);
 
 export class ItemResultsService {
   private chaosRatios: Record<string, number> | null = null;
   private statNeedles: RegExp[] = [];
   private readonly DIVINE_SLUG = "divine-orb";
   private readonly CHAOS_SLUG = "chaos-orb";
+  private hasHydratedPinnedItems = false;
+  private storageListenerRegistered = false;
 
-  subscribe = subscribe;
+  subscribe = pinnedItemsStore.subscribe;
 
   async initialize() {
+    await this.ensurePinnedItemsHydrated();
+    if (window.location.protocol === "chrome-extension:") {
+      return;
+    }
     await this.fetchRatios();
     this.prepareHighlighting();
     this.startObserving();
+  }
+
+  private async ensurePinnedItemsHydrated() {
+    if (!this.hasHydratedPinnedItems) {
+      const storedItems = await storageService.getValue<PinnedItem[]>(PINNED_ITEMS_STORAGE_KEY);
+      pinnedItemsStore.set(storedItems || []);
+      this.hasHydratedPinnedItems = true;
+    }
+
+    if (!this.storageListenerRegistered && typeof chrome !== "undefined" && chrome.storage?.onChanged) {
+      chrome.storage.onChanged.addListener((changes, areaName) => {
+        if (areaName !== "local" || !changes[PINNED_ITEMS_STORAGE_KEY]) {
+          return;
+        }
+
+        pinnedItemsStore.set(changes[PINNED_ITEMS_STORAGE_KEY].newValue?.value || []);
+      });
+      this.storageListenerRegistered = true;
+    }
+  }
+
+  private async setPinnedItems(items: PinnedItem[]) {
+    pinnedItemsStore.set(items);
+    await storageService.setValue(PINNED_ITEMS_STORAGE_KEY, items);
   }
 
   private async fetchRatios() {
@@ -153,20 +185,30 @@ export class ItemResultsService {
     const id = row.dataset.id;
     if (!id) return;
 
-    update(items => {
+    let nextItems: PinnedItem[] | null = null;
+
+    pinnedItemsStore.update((items) => {
       const exists = items.find(i => i.id === id);
       if (exists) {
         row.classList.remove("bt-pinned");
-        return items.filter(i => i.id !== id);
-      } else {
-        const pinned = this.createPinnedItem(row);
-        if (pinned) {
-          row.classList.add("bt-pinned");
-          return [...items, pinned];
-        }
-        return items;
+        nextItems = items.filter(i => i.id !== id);
+        return nextItems;
       }
+
+      const pinned = this.createPinnedItem(row);
+      if (pinned) {
+        row.classList.add("bt-pinned");
+        nextItems = [...items, pinned];
+        return nextItems;
+      }
+
+      nextItems = items;
+      return items;
     });
+
+    if (nextItems) {
+      void this.setPinnedItems(nextItems);
+    }
   }
 
   private createPinnedItem(row: HTMLElement): PinnedItem | null {
@@ -226,13 +268,20 @@ export class ItemResultsService {
   }
 
   unpin(id: string) {
-    update(items => items.filter(i => i.id !== id));
+    let nextItems: PinnedItem[] = [];
+
+    pinnedItemsStore.update((items) => {
+      nextItems = items.filter(i => i.id !== id);
+      return nextItems;
+    });
+
+    void this.setPinnedItems(nextItems);
     const row = document.querySelector(`.row[data-id="${id}"]`);
     if (row) row.classList.remove("bt-pinned");
   }
 
   clear() {
-    set([]);
+    void this.setPinnedItems([]);
     document.querySelectorAll(".bt-pinned").forEach(el => el.classList.remove("bt-pinned"));
   }
 }

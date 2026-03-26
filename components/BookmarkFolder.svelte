@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { BookmarksFolderStruct, BookmarksTradeStruct } from "../lib/types/bookmarks";
   import { bookmarksService } from "../lib/services/bookmarks";
+  import { getActiveTradeTabTitle, openUrlInActiveTab } from "../lib/services/active-trade-tab";
   import { tradeLocationService } from "../lib/services/trade-location";
   import { flashMessages } from "../lib/services/flash";
   import { getTradeUrl } from "../lib/utilities/trade-url";
@@ -93,10 +94,22 @@
       slug: current.slug,
       league: current.league
     });
-    trade.title = document.title.replace(" - Path of Exile", "").replace(/⚡ /g, "") || "New Trade";
+    const activeTabTitle = await getActiveTradeTabTitle();
+    trade.title = (activeTabTitle || document.title).replace(" - Path of Exile", "").replace(/⚡ /g, "") || "New Trade";
     await bookmarksService.persistTrade(trade, folder.id);
     await loadTrades();
     flashMessages.success(`Added "${trade.title}" to folder`);
+  };
+
+  const openTrade = async (trade: BookmarksTradeStruct) => {
+    await openUrlInActiveTab(
+      getTradeUrl(
+        trade.location.version,
+        trade.location.type,
+        trade.location.slug,
+        trade.location.league || tradeLocationService.current.league || "Standard"
+      )
+    );
   };
 
   const exportFolder = () => {
@@ -178,7 +191,11 @@
             <li class="trade-item">
               <div class="trade-info">
                 {#if trade.completedAt}<span class="check">✓</span>{/if}
-                <a class="trade-link" href={getTradeUrl(trade.location.version, trade.location.type, trade.location.slug, trade.location.league || tradeLocationService.current.league || 'Standard')}>
+                <a
+                  class="trade-link"
+                  href={getTradeUrl(trade.location.version, trade.location.type, trade.location.slug, trade.location.league || tradeLocationService.current.league || 'Standard')}
+                  on:click|preventDefault={() => void openTrade(trade)}
+                >
                   {trade.title}
                 </a>
               </div>

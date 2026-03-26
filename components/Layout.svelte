@@ -6,26 +6,12 @@
   import About from "./pages/About.svelte";
   import logoUrl from "data-base64:~assets/logo.png";
   import { flashMessages } from "../lib/services/flash";
-  import { itemResultsService } from "../lib/services/item-results";
-  import { onMount } from "svelte";
-
-  const PANEL_WIDTH = "360px";
+  
   let currentPage: 'bookmarks' | 'history' | 'pinned' | 'about' = 'bookmarks';
-  let isCollapsed = false;
-
-  onMount(() => {
-    const handleToggle = (e: any) => {
-        isCollapsed = e.detail;
-    };
-    document.addEventListener('bt-collapse-toggle', handleToggle);
-    return () => document.removeEventListener('bt-collapse-toggle', handleToggle);
-  });
 </script>
 
 <div
-  id="better-trading-container"
-  class={isCollapsed ? 'is-collapsed' : ''}
-  style={`width:${PANEL_WIDTH};min-width:${PANEL_WIDTH};max-width:${PANEL_WIDTH};`}>
+  id="better-trading-container">
   <Header {logoUrl} />
   
   <nav class="main-nav">
@@ -81,7 +67,12 @@
   @use "../lib/styles/variables" as *;
 
   #better-trading-container {
-      /* Base styles already in base.scss for the container ID */
+    min-height: 100vh;
+    background-color: $poe-black;
+    display: flex;
+    flex-direction: column;
+    font-family: $default-font;
+    color: $white;
   }
 
   .main-nav {

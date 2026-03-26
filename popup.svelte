@@ -7,7 +7,7 @@
   <p class="eyebrow">Kroxitrade</p>
   <h1>Trade tools directly inside Path of Exile Trade</h1>
   <p class="description">
-    Open the official trade site to use bookmarks, pinned items, title enhancements and price helpers.
+    Open the official trade site and use the extension action to open Kroxitrade in Chrome's side panel.
   </p>
 
   <div class="actions">

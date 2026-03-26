@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { getActiveTradeTab } from "./active-trade-tab";
 import { storageService } from "./storage";
 import { searchPanelService } from "./search-panel";
 import { uniqueId } from "../utilities/unique-id";
@@ -20,17 +21,30 @@ export class TradeLocationService {
   private pollingTimer: ReturnType<typeof setInterval> | null = null;
   private focusHandler: (() => void) | null = null;
   private blurHandler: (() => void) | null = null;
+  private activeTabUpdatedHandler: ((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => void) | null = null;
+  private activeTabActivatedHandler: ((activeInfo: chrome.tabs.TabActiveInfo) => void) | null = null;
   
   // Svelte store for reactivity
-  public locationStore = writable<ExactTradeLocationStruct>(this.parseCurrentPath());
+  public locationStore = writable<ExactTradeLocationStruct>(this.parseCurrentLocation());
 
   constructor() {
-    this.lastLocation = this.parseCurrentPath();
+    this.lastLocation = this.parseCurrentLocation();
   }
 
-  get current() { return this.parseCurrentPath(); }
+  get current() {
+    if (this.isExtensionUi()) {
+      return this.lastLocation ?? this.emptyLocation();
+    }
+
+    return this.parseCurrentPath();
+  }
 
   startPolling(interval: number = 1000) {
+    if (this.isExtensionUi()) {
+      void this.startActiveTabTracking();
+      return;
+    }
+
     if (this.pollingTimer) return; // Don't start twice
 
     this.pollingTimer = setInterval(() => {
@@ -54,6 +68,49 @@ export class TradeLocationService {
     this.pollingTimer = setInterval(() => {
       this.syncCurrentLocation();
     }, interval);
+  }
+
+  private async startActiveTabTracking() {
+    await this.refreshFromActiveTab();
+
+    if (typeof chrome === "undefined" || !chrome.tabs) {
+      return;
+    }
+
+    if (!this.activeTabUpdatedHandler && chrome.tabs.onUpdated) {
+      this.activeTabUpdatedHandler = (tabId, changeInfo, tab) => {
+        if (changeInfo.url || tab.active) {
+          void this.refreshFromActiveTab();
+        }
+      };
+      chrome.tabs.onUpdated.addListener(this.activeTabUpdatedHandler);
+    }
+
+    if (!this.activeTabActivatedHandler && chrome.tabs.onActivated) {
+      this.activeTabActivatedHandler = () => {
+        void this.refreshFromActiveTab();
+      };
+      chrome.tabs.onActivated.addListener(this.activeTabActivatedHandler);
+    }
+
+    if (!this.focusHandler) {
+      this.focusHandler = () => {
+        void this.refreshFromActiveTab();
+      };
+      window.addEventListener("focus", this.focusHandler);
+    }
+  }
+
+  private async refreshFromActiveTab() {
+    const tab = await getActiveTradeTab();
+    const current = this.parseUrl(tab?.url ?? null);
+    this.locationStore.set(current);
+
+    if (!this.lastLocation || !this.isExactEqual(this.lastLocation, current)) {
+      const old = this.lastLocation ?? current;
+      this.lastLocation = current;
+      this.notify(old, current);
+    }
   }
 
   private pausePolling() {
@@ -124,8 +181,50 @@ export class TradeLocationService {
     return this.isEqual(a, b) && a.isLive === b.isLive;
   }
 
+  private isExtensionUi() {
+    return window.location.protocol === "chrome-extension:";
+  }
+
+  private parseCurrentLocation() {
+    if (this.isExtensionUi()) {
+      return this.emptyLocation();
+    }
+
+    return this.parseCurrentPath();
+  }
+
+  private emptyLocation(): ExactTradeLocationStruct {
+    return {
+      version: "1",
+      type: null,
+      league: null,
+      slug: null,
+      isLive: false
+    };
+  }
+
   private parseCurrentPath(): ExactTradeLocationStruct {
-    const pathParts = window.location.pathname.split("/").slice(1);
+    return this.parseUrl(window.location.href);
+  }
+
+  private parseUrl(urlString: string | null): ExactTradeLocationStruct {
+    if (!urlString) {
+      return this.emptyLocation();
+    }
+
+    let url: URL;
+
+    try {
+      url = new URL(urlString);
+    } catch {
+      return this.emptyLocation();
+    }
+
+    if (url.hostname !== "www.pathofexile.com" || !url.pathname.startsWith("/trade")) {
+      return this.emptyLocation();
+    }
+
+    const pathParts = url.pathname.split("/").slice(1);
     let versionPart: string, type: string | undefined, league: string | undefined, slug: string | undefined, live: string | undefined;
 
     // Handle realm-based URLs: /trade/search/xbox/LeagueName/slug

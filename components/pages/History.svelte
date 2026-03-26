@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { tradeLocationService } from "../../lib/services/trade-location";
+  import { openUrlInActiveTab } from "../../lib/services/active-trade-tab";
   import { flashMessages } from "../../lib/services/flash";
   import { getTradeUrl } from "../../lib/utilities/trade-url";
   import type { TradeLocationHistoryStruct } from "../../lib/types/trade-location";
@@ -29,6 +30,12 @@
     historyEntries = [];
     flashMessages.success("History cleared!");
   };
+
+  const openHistoryEntry = async (entry: TradeLocationHistoryStruct) => {
+    await openUrlInActiveTab(
+      getTradeUrl(entry.version, entry.type, entry.slug, entry.league || "Standard")
+    );
+  };
 </script>
 
 <div class="history-page">
@@ -37,9 +44,10 @@
       <ul class="history-list">
         {#each historyEntries as entry (entry.id)}
           <li class="history-item">
-            <a 
-                class="history-link" 
+            <a
+                class="history-link"
                 href={getTradeUrl(entry.version, entry.type, entry.slug, entry.league || 'Standard')}
+                on:click|preventDefault={() => void openHistoryEntry(entry)}
             >
               <div class="history-title">{entry.title}</div>
               <div class="history-meta">{entry.league} • {new Date(entry.createdAt).toLocaleString()}</div>
