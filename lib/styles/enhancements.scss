@@ -1,13 +1,29 @@
 @use 'variables' as *;
 
-html.bt-has-kroxitrade-sidebar,
-body.bt-has-kroxitrade-sidebar {
+html.bt-has-kroxitrade-sidebar {
   overflow-x: hidden !important;
 }
 
 body.bt-has-kroxitrade-sidebar {
   padding-left: var(--bt-sidebar-width, 360px) !important;
   box-sizing: border-box !important;
+}
+
+/* Fix for Path of Exile fixed elements */
+.bt-has-kroxitrade-sidebar .top-bar-container,
+.bt-has-kroxitrade-sidebar .header,
+.bt-has-kroxitrade-sidebar .contents > .search-bar {
+  left: var(--bt-sidebar-width, 360px) !important;
+  width: calc(100% - var(--bt-sidebar-width, 360px)) !important;
+}
+
+plasmo-csui {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 2147483647 !important;
+  width: var(--bt-sidebar-width, 360px) !important;
+  height: 100vh !important;
 }
 
 @keyframes pinned-glow-keyframes {

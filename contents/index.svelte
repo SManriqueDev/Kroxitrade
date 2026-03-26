@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PlasmoCSConfig, PlasmoGetRootContainer, PlasmoGetStyle } from "plasmo"
+  import type { PlasmoCSConfig, PlasmoGetInlineAnchor, PlasmoGetStyle } from "plasmo"
   import Layout from "~components/Layout.svelte"
   import cssText from "data-text:~lib/styles/base.scss"
   import enhancementsCss from "data-text:~lib/styles/enhancements.scss"
@@ -19,36 +19,10 @@
     return style
   }
 
-  export const getRootContainer: PlasmoGetRootContainer = async () => {
-    const existingRoot = document.getElementById("better-trading-root")
-    if (existingRoot) {
-      return existingRoot
-    }
-
-    const root = document.createElement("div")
-    root.id = "better-trading-root"
-    root.style.position = "fixed"
-    root.style.left = "0"
-    root.style.right = "auto"
-    root.style.top = "0"
-    root.style.bottom = "0"
-    root.style.width = EXTENSION_WIDTH
-    root.style.minWidth = EXTENSION_WIDTH
-    root.style.maxWidth = EXTENSION_WIDTH
-    root.style.height = "100vh"
-    root.style.minHeight = "100vh"
-    root.style.margin = "0"
-    root.style.padding = "0"
-    root.style.overflow = "hidden"
-    root.style.boxSizing = "border-box"
-    root.style.zIndex = "2147483647"
-    root.style.pointerEvents = "none"
-
-    const mountTarget = document.body ?? document.documentElement
-    mountTarget.appendChild(root)
-
-    return root
-  }
+  export const getInlineAnchor: PlasmoGetInlineAnchor = async () => ({
+    element: document.body,
+    insertPosition: "afterbegin"
+  })
 
   onMount(() => {
     if (!document.body) {
