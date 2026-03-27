@@ -3,12 +3,18 @@
   import Button from "../Button.svelte";
   import { onMount } from "svelte";
 
+  const DEFAULT_SIDEBAR_WIDTH = 360;
+
   async function handleSideChange(side: SidebarSide) {
     await settings.updateSide(side);
   }
 
   async function handleEquivalentPricingChange(showEquivalentPricing: boolean) {
     await settings.updateEquivalentPricingVisibility(showEquivalentPricing);
+  }
+
+  async function handleSidebarWidthReset() {
+    await settings.updateSidebarWidth(DEFAULT_SIDEBAR_WIDTH);
   }
 
   onMount(async () => {
@@ -33,6 +39,14 @@
         theme={$settings.sidebarSide === 'right' ? 'gold' : 'blue'}
         class="side-btn"
         onClick={() => handleSideChange('right')}
+      />
+    </div>
+
+    <div class="settings-inline-action">
+      <Button
+        label={`RESET WIDTH (${$settings.sidebarWidth || DEFAULT_SIDEBAR_WIDTH}px)`}
+        theme="blue"
+        onClick={handleSidebarWidthReset}
       />
     </div>
   </section>
@@ -112,6 +126,11 @@
   .side-selector {
     display: flex;
     gap: 10px;
+  }
+
+  .settings-inline-action {
+    margin-top: 12px;
+    display: flex;
   }
 
   :global(.side-btn) {

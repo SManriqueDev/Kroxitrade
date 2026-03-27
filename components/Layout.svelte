@@ -8,34 +8,96 @@
   import logoUrl from "data-base64:~assets/logo.png";
   import { flashMessages } from "../lib/services/flash";
   import { settings } from "../lib/services/settings";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   
   let currentPage: 'bookmarks' | 'history' | 'about' | 'settings' = 'bookmarks';
   let isMinimized = false;
+  let isResizing = false;
+  let liveSidebarWidth: number | null = null;
+
+  const MIN_SIDEBAR_WIDTH = 300;
+  const MAX_SIDEBAR_WIDTH = 560;
+  const MINIMIZED_WIDTH = 40;
+
+  const clampSidebarWidth = (value: number) =>
+    Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, Math.round(value)));
+
+  const getExpandedSidebarWidth = () => clampSidebarWidth($settings.sidebarWidth || 360);
+  const getRenderedSidebarWidth = () => clampSidebarWidth(liveSidebarWidth ?? getExpandedSidebarWidth());
 
   const toggleMinimize = () => {
     isMinimized = !isMinimized;
   };
 
+  const updateSidebarWidthCssVar = () => {
+    if (typeof document === 'undefined') return;
+
+    const root = document.documentElement;
+    root.style.setProperty(
+      '--bt-sidebar-width',
+      isMinimized ? `${MINIMIZED_WIDTH}px` : `${getRenderedSidebarWidth()}px`
+    );
+  };
+
+  const stopResize = async () => {
+    if (!isResizing) return;
+
+    isResizing = false;
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+    if (liveSidebarWidth !== null) {
+      await settings.updateSidebarWidth(clampSidebarWidth(liveSidebarWidth));
+      liveSidebarWidth = null;
+    }
+  };
+
+  const handleResizeMove = (event: MouseEvent) => {
+    if (!isResizing || isMinimized) return;
+
+    const nextWidth = $settings.sidebarSide === 'right'
+      ? window.innerWidth - event.clientX
+      : event.clientX;
+
+    const clampedWidth = clampSidebarWidth(nextWidth);
+    liveSidebarWidth = clampedWidth;
+    document.documentElement.style.setProperty('--bt-sidebar-width', `${clampedWidth}px`);
+  };
+
+  const startResize = (event: MouseEvent) => {
+    if (isMinimized) return;
+
+    event.preventDefault();
+    isResizing = true;
+    liveSidebarWidth = getExpandedSidebarWidth();
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+  };
+
   onMount(async () => {
     await settings.load();
+
+    window.addEventListener('mousemove', handleResizeMove);
+    window.addEventListener('mouseup', stopResize);
+    window.addEventListener('mouseleave', stopResize);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('mousemove', handleResizeMove);
+    window.removeEventListener('mouseup', stopResize);
+    window.removeEventListener('mouseleave', stopResize);
   });
 
   $: {
     if (typeof document !== 'undefined') {
-      const root = document.documentElement;
       const isRight = $settings.sidebarSide === 'right';
       
-      if (isMinimized) {
-        root.style.setProperty('--bt-sidebar-width', '40px');
-      } else {
-        root.style.setProperty('--bt-sidebar-width', '360px');
-      }
+      updateSidebarWidthCssVar();
 
       // Add classes to body and root to help site adjustments
       document.body.classList.toggle('is-side-right', isRight);
       document.body.classList.toggle('is-side-left', !isRight);
       document.documentElement.classList.toggle('bt-side-right', isRight);
+      document.body.classList.toggle('bt-is-resizing-sidebar', isResizing);
 
       // Target all possible plasmo host containers and apply direct styles for extra robustness
       const hosts = document.querySelectorAll('plasmo-csui, #plasmo-shadow-container');
@@ -60,6 +122,16 @@
   class:is-minimized={isMinimized} 
   class:side-right={$settings.sidebarSide === 'right'}
 >
+  {#if !isMinimized}
+    <button
+      type="button"
+      class="resize-handle"
+      class:side-right={$settings.sidebarSide === 'right'}
+      aria-label="Resize sidebar"
+      on:mousedown={startResize}
+    ></button>
+  {/if}
+
   <Header {logoUrl} {isMinimized} onToggleMinimize={toggleMinimize} sidebarSide={$settings.sidebarSide} />
   
   <nav class="main-nav">
@@ -137,9 +209,9 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 360px !important;
-    min-width: 360px !important;
-    max-width: 360px !important;
+    width: var(--bt-sidebar-width, 360px) !important;
+    min-width: var(--bt-sidebar-width, 360px) !important;
+    max-width: var(--bt-sidebar-width, 360px) !important;
     height: 100vh;
     min-height: 100vh;
     max-height: 100vh;
@@ -166,6 +238,78 @@
 
     &.is-minimized {
       transform: translateX(-100%);
+    }
+  }
+
+  .resize-handle {
+    position: absolute;
+    top: 0;
+    right: -5px;
+    width: 10px;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 3;
+
+    &.side-right {
+      right: auto;
+      left: -5px;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 4px;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba($gold, 0.05),
+        rgba($gold, 0.22) 20%,
+        rgba($gold, 0.22) 80%,
+        rgba($gold, 0.05)
+      );
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+      opacity: 0.85;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 1px;
+      width: 8px;
+      height: 36px;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background:
+        radial-gradient(circle, rgba($gold, 0.38) 1px, transparent 1.5px) center 6px / 4px 8px repeat-y,
+        rgba($black, 0.38);
+      border: 1px solid rgba($gold, 0.16);
+      box-shadow: 0 0 8px rgba($black, 0.28);
+      transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+    }
+
+    &:hover::after {
+      opacity: 1;
+      background: linear-gradient(
+        180deg,
+        rgba($gold, 0.08),
+        rgba($gold, 0.4) 20%,
+        rgba($gold, 0.4) 80%,
+        rgba($gold, 0.08)
+      );
+    }
+
+    &:hover::before {
+      border-color: rgba($gold, 0.34);
+      background:
+        radial-gradient(circle, rgba($gold, 0.62) 1px, transparent 1.5px) center 6px / 4px 8px repeat-y,
+        rgba($black, 0.52);
+      transform: translateY(-50%) scale(1.02);
     }
   }
 

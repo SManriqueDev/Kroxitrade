@@ -6,11 +6,13 @@ export type SidebarSide = 'left' | 'right';
 export interface AppSettings {
   sidebarSide: SidebarSide;
   showEquivalentPricing: boolean;
+  sidebarWidth: number;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   sidebarSide: 'right',
   showEquivalentPricing: false,
+  sidebarWidth: 360,
 };
 
 let currentSettings: AppSettings = DEFAULT_SETTINGS;
@@ -48,6 +50,13 @@ export const settings = {
   async updateEquivalentPricingVisibility(showEquivalentPricing: boolean) {
     update(s => {
       const next = { ...s, showEquivalentPricing };
+      save(next);
+      return next;
+    });
+  },
+  async updateSidebarWidth(sidebarWidth: number) {
+    update(s => {
+      const next = { ...s, sidebarWidth };
       save(next);
       return next;
     });

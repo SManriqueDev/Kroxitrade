@@ -26,18 +26,18 @@
 
 :host {
   display: block !important;
-  width: $extension-width !important;
-  min-width: $extension-width !important;
-  max-width: $extension-width !important;
+  width: var(--bt-sidebar-width, $extension-width) !important;
+  min-width: var(--bt-sidebar-width, $extension-width) !important;
+  max-width: var(--bt-sidebar-width, $extension-width) !important;
   height: 100vh !important;
   min-height: 100vh !important;
 }
 
 #plasmo-shadow-container {
   display: block !important;
-  width: $extension-width !important;
-  min-width: $extension-width !important;
-  max-width: $extension-width !important;
+  width: var(--bt-sidebar-width, $extension-width) !important;
+  min-width: var(--bt-sidebar-width, $extension-width) !important;
+  max-width: var(--bt-sidebar-width, $extension-width) !important;
   height: 100vh !important;
   min-height: 100vh !important;
   pointer-events: none !important;
@@ -64,9 +64,9 @@
   position: absolute;
   z-index: 2147483647;
   inset: 0 auto 0 0;
-  width: $extension-width !important;
-  min-width: $extension-width !important;
-  max-width: $extension-width !important;
+  width: var(--bt-sidebar-width, $extension-width) !important;
+  min-width: var(--bt-sidebar-width, $extension-width) !important;
+  max-width: var(--bt-sidebar-width, $extension-width) !important;
   height: 100%;
   min-height: 100vh;
   background-color: $poe-black;
@@ -113,7 +113,7 @@
 .flash-messages {
   position: fixed;
   top: 12px;
-  left: calc($extension-width + 12px);
+  left: calc(var(--bt-sidebar-width, $extension-width) + 12px);
   width: 280px;
   z-index: 1001;
   pointer-events: none;

@@ -321,6 +321,7 @@
     width: 100%;
     min-width: 0;
     max-width: 100%;
+    container-type: inline-size;
   }
 
   .toolbar-panel,
@@ -435,6 +436,17 @@
     display: inline-flex;
     align-items: center;
     min-height: 14px;
+  }
+
+  @container (max-width: 359px) {
+    .toolbar-icon {
+      display: none;
+    }
+
+    .toolbar-button {
+      gap: 0;
+      padding: 0 8px;
+    }
   }
 
   @media (min-width: 520px) {
