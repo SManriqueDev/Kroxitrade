@@ -69,7 +69,7 @@
     &.is-blue {
       border-color: rgba($blue, 0.4);
       background: rgba($blue, 0.1);
-      color: lighten($blue, 20%);
+      color: color.adjust($blue, $lightness: 20%);
       &:hover { 
           background: rgba($blue, 0.2);
           border-color: rgba($blue, 0.8);
@@ -86,14 +86,14 @@
           background: rgba($gold, 0.15);
           border-color: $gold;
           box-shadow: 0 0 8px rgba($gold, 0.2);
-          color: lighten($gold, 20%);
+          color: color.adjust($gold, $lightness: 20%);
       }
     }
 
     &.is-red {
       border-color: rgba($red, 0.4);
       background: rgba($red, 0.08);
-      color: lighten($red, 15%);
+      color: color.adjust($red, $lightness: 15%);
       &:hover { 
           background: rgba($red, 0.15);
           border-color: $red;
