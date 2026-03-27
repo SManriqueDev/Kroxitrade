@@ -287,10 +287,10 @@
   .toolbar-button {
     min-height: 42px;
     padding: 6px 8px 5px;
-    border: 1px solid rgba($gold, 0.28);
+    border: 1px solid rgba($gold, 0.22);
     border-radius: 4px;
-    background: linear-gradient(180deg, rgba(97, 77, 43, 0.42), rgba(39, 30, 18, 0.9));
-    color: #e3b466;
+    background: rgba($black, 0.34);
+    color: #d7a75f;
     font-family: $primary-font;
     font-size: 9px;
     letter-spacing: 0.06em;
@@ -308,18 +308,16 @@
       box-shadow 0.15s ease;
 
     &:hover {
-      border-color: rgba($gold, 0.42);
-      background: linear-gradient(180deg, rgba(126, 98, 53, 0.54), rgba(55, 41, 22, 0.95));
+      border-color: rgba($gold, 0.34);
+      background: rgba(42, 34, 24, 0.9);
       transform: translateY(-1px);
-      box-shadow:
-        inset 0 1px 0 rgba(255, 232, 187, 0.08),
-        0 0 0 1px rgba($gold, 0.04);
+      box-shadow: inset 0 1px 0 rgba(255, 232, 187, 0.04);
     }
 
     &.active {
-      border-color: rgba($gold, 0.5);
-      background: linear-gradient(180deg, rgba(140, 109, 57, 0.62), rgba(67, 49, 24, 0.98));
-      color: #f0c77d;
+      border-color: rgba($gold, 0.38);
+      background: rgba(54, 42, 28, 0.96);
+      color: #e2b56e;
     }
   }
 
