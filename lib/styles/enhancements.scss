@@ -90,8 +90,11 @@ plasmo-csui {
 }
 
 .bt-highlight-stat-filters {
-  background-color: rgba($gold-alt, 0.15) !important;
-  border: 1px solid rgba($gold, 0.3) !important;
+  background-color: rgba(40, 167, 69, 0.22) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
 }
 
 .bt-maximum-sockets-warning {
@@ -139,8 +142,10 @@ plasmo-csui {
   z-index: -1;
   position: absolute;
   inset: 0;
-  background: rgba($gold, 0.15);
-  border: 1px solid rgba($gold, 0.3);
+  background: rgba(40, 167, 69, 0.10);
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 #finer-search-global {

@@ -211,8 +211,6 @@ export class ItemResultsService {
         const text = mod.textContent || "";
         if (this.statNeedles.some(n => n.test(text))) {
             mod.classList.add("bt-highlight-stat-filters");
-            mod.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
-            mod.style.border = "1px solid rgba(255, 255, 0, 0.3)";
         }
     });
   }
