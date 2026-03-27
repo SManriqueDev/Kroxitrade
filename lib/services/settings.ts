@@ -8,7 +8,7 @@ export interface AppSettings {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-  sidebarSide: 'left',
+  sidebarSide: 'right',
 };
 
 const { subscribe, set, update } = writable<AppSettings>(DEFAULT_SETTINGS);

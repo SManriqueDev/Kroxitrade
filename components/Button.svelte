@@ -1,6 +1,7 @@
 <script lang="ts">
   export let label: string = "";
   export let icon: string = "";
+  export let iconHtml: string = "";
   export let href: string = "";
   export let theme: "blue" | "gold" | "red" = "blue";
   export let onFileChange: ((event: Event) => void) | null = null;
@@ -16,18 +17,18 @@
 
 {#if href}
   <a {href} target="_blank" rel="noopener" class="button is-{theme} {className}">
-    {#if icon}<span class="icon">{icon}</span>{/if}
+    {#if iconHtml}<span class="icon icon-html">{@html iconHtml}</span>{:else if icon}<span class="icon">{icon}</span>{/if}
     {#if label}<span class="label">{label}</span>{/if}
   </a>
 {:else if onFileChange}
   <label class="button is-{theme} {className}">
     <input type="file" class="file-input" accept={fileAccept} on:change={onFileChange} />
-    {#if icon}<span class="icon">{icon}</span>{/if}
+    {#if iconHtml}<span class="icon icon-html">{@html iconHtml}</span>{:else if icon}<span class="icon">{icon}</span>{/if}
     {#if label}<span class="label">{label}</span>{/if}
   </label>
 {:else}
   <button type="button" class="button is-{theme} {className}" on:click={handleClick}>
-    {#if icon}<span class="icon">{icon}</span>{/if}
+    {#if iconHtml}<span class="icon icon-html">{@html iconHtml}</span>{:else if icon}<span class="icon">{icon}</span>{/if}
     {#if label}<span class="label">{label}</span>{/if}
   </button>
 {/if}
@@ -105,5 +106,24 @@
 
   .file-input { display: none !important; }
   .icon { margin-right: 8px; font-size: 14px; }
+  .icon-html {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    font-size: 0;
+  }
+
+  .icon-html :global(.toolbar-svg) {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+    display: block;
+    overflow: visible;
+    stroke-width: 1.65;
+  }
+
   .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>

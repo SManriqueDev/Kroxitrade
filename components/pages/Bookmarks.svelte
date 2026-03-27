@@ -154,13 +154,26 @@
       isImportingText = false;
   };
 
+  const normalizeToolbarIcon = (svg: string) =>
+    svg
+      .replace(/<svg\b([^>]*)>/, (_match, attrs) => {
+        const nextAttrs = attrs
+          .replace(/\sclass="[^"]*"/g, "")
+          .replace(/\swidth="[^"]*"/g, "")
+          .replace(/\sheight="[^"]*"/g, "")
+          .replace(/\sviewBox="[^"]*"/g, "")
+          .trim();
+
+        return `<svg ${nextAttrs} viewBox="-2 -2 28 28" class="toolbar-svg">`;
+      });
+
   const toolbarIcons = {
-    newFolder: folderPlusIcon,
-    import: downloadIcon,
-    cancel: xIcon,
-    collapse: chevronsUpIcon,
-    archive: archiveIcon,
-    active: archiveRestoreIcon
+    newFolder: normalizeToolbarIcon(folderPlusIcon),
+    import: normalizeToolbarIcon(downloadIcon),
+    cancel: normalizeToolbarIcon(xIcon),
+    collapse: normalizeToolbarIcon(chevronsUpIcon),
+    archive: normalizeToolbarIcon(archiveIcon),
+    active: normalizeToolbarIcon(archiveRestoreIcon)
   };
 </script>
 
@@ -236,8 +249,8 @@
   <section class="action-section backup-section">
     <div class="section-heading">Backup & Restore</div>
     <div class="button-row backup-row">
-        <Button label="SAVE FILE" theme="gold" icon="💾" onClick={exportToFile} class="flex-1" />
-        <Button label="RESTORE FROM FILE" theme="gold" icon="📂" onFileChange={restoreFromFile} fileAccept=".txt" class="flex-1" />
+        <Button label="SAVE FILE" theme="gold" iconHtml={toolbarIcons.import} onClick={exportToFile} class="flex-1" />
+        <Button label="RESTORE FROM FILE" theme="gold" iconHtml={toolbarIcons.active} onFileChange={restoreFromFile} fileAccept=".txt" class="flex-1" />
     </div>
   </section>
 </div>
@@ -348,17 +361,25 @@
     justify-content: center;
     width: 14px;
     height: 14px;
+    overflow: visible;
   }
 
-  .toolbar-icon svg {
+  .toolbar-icon :global(.toolbar-svg) {
     width: 14px;
     height: 14px;
-    stroke-width: 1.85;
+    min-width: 14px;
+    min-height: 14px;
+    stroke-width: 1.65;
+    display: block;
+    overflow: visible;
   }
 
   .toolbar-label {
     line-height: 1;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    min-height: 14px;
   }
 
   @media (min-width: 520px) {
