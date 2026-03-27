@@ -28,6 +28,8 @@ export class ItemResultsService {
   private statNeedles: RegExp[] = [];
   private readonly DIVINE_SLUG = "divine-orb";
   private readonly CHAOS_SLUG = "chaos-orb";
+  private readonly CHAOS_ICON_URL = "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png?scale=1&w=1&h=1";
+  private readonly DIVINE_ICON_URL = "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png?scale=1&w=1&h=1";
   private showEquivalentPricing = false;
   private unsubscribeSettings: (() => void) | null = null;
   async initialize() {
@@ -119,59 +121,84 @@ export class ItemResultsService {
         const remainderFraction = amount - wholeDivines;
         const remainderChaos = Math.round(remainderFraction * ratio);
 
-        let htmlSnippet = "";
+        const parts: Array<number | string | { separator: true; }> = [];
         if (wholeDivines > 0 && remainderChaos > 0) {
-            htmlSnippet = this.getCurrencyHtml(wholeDivines, this.DIVINE_SLUG) + 
-                          ` <span style="margin: 0 3px; color: rgba(255,255,255,0.4); font-size: 14px;">+</span> ` + 
-                          this.getCurrencyHtml(remainderChaos, this.CHAOS_SLUG);
+            parts.push({ amount: wholeDivines, slug: this.DIVINE_SLUG } as any);
+            parts.push({ separator: true });
+            parts.push({ amount: remainderChaos, slug: this.CHAOS_SLUG } as any);
         } else if (wholeDivines === 0 && remainderChaos > 0) {
-            htmlSnippet = this.getCurrencyHtml(remainderChaos, this.CHAOS_SLUG);
+            parts.push({ amount: remainderChaos, slug: this.CHAOS_SLUG } as any);
         } else {
-            htmlSnippet = this.getCurrencyHtml(totalChaos, this.CHAOS_SLUG);
+            parts.push({ amount: totalChaos, slug: this.CHAOS_SLUG } as any);
         }
-        this.appendEquivHtml(priceContainer, htmlSnippet);
+        this.appendEquivHtml(priceContainer, parts as Array<{ amount: number | string; slug: string } | { separator: true }>);
 
     } else if (slug === this.CHAOS_SLUG && divineRatio && amount >= divineRatio * 0.5) {
         // Original price is Chaos, e.g. 195 Chaos
         const wholeDivines = Math.floor(amount / divineRatio);
         const remainderChaos = Math.round(amount % divineRatio);
 
-        let htmlSnippet = "";
+        const parts: Array<{ amount: number | string; slug: string } | { separator: true }> = [];
         if (wholeDivines > 0) {
-            htmlSnippet = this.getCurrencyHtml(wholeDivines, this.DIVINE_SLUG);
+            parts.push({ amount: wholeDivines, slug: this.DIVINE_SLUG });
             if (remainderChaos > 0) {
-                htmlSnippet += ` <span style="margin: 0 3px; color: rgba(255,255,255,0.4); font-size: 14px;">+</span> ` + 
-                               this.getCurrencyHtml(remainderChaos, this.CHAOS_SLUG);
+                parts.push({ separator: true });
+                parts.push({ amount: remainderChaos, slug: this.CHAOS_SLUG });
             }
         } else {
             // Less than 1 Divine (e.g. 100 chaos). Just show fraction: 0.7 Divine
             const fraction = (amount / divineRatio).toFixed(1);
-            htmlSnippet = this.getCurrencyHtml(fraction, this.DIVINE_SLUG);
+            parts.push({ amount: fraction, slug: this.DIVINE_SLUG });
         }
-        this.appendEquivHtml(priceContainer, htmlSnippet);
+        this.appendEquivHtml(priceContainer, parts);
 
     } else if (slug !== this.CHAOS_SLUG && slug !== this.DIVINE_SLUG && ratio) {
         // Other currencies (like Exalted orbs). Just show total chaos equivalent.
         const chaosEquiv = Math.round(amount * ratio);
-        this.appendEquivHtml(priceContainer, this.getCurrencyHtml(chaosEquiv, this.CHAOS_SLUG));
+        this.appendEquivHtml(priceContainer, [{ amount: chaosEquiv, slug: this.CHAOS_SLUG }]);
     } else {
         console.debug(`[Kroxitrade] Could not determine equivalence for ${amountText} ${currencyText} (slug: ${slug})`);
     }
   }
 
-  private appendEquivHtml(container: HTMLElement, htmlContent: string) {
+  private appendEquivHtml(
+    container: HTMLElement,
+    parts: Array<{ amount: number | string; slug: string } | { separator: true }>
+  ) {
     const el = document.createElement("span");
     el.className = "bt-equivalent-pricings bt-equivalent-pricings-equivalent";
-    el.innerHTML = `<span class="bt-equivalent-label">equivalent:</span>${htmlContent}`;
+    el.appendChild(this.createTextSpan("bt-equivalent-label", "equivalent:"));
+
+    parts.forEach((part) => {
+      if ("separator" in part) {
+        el.appendChild(this.createTextSpan("bt-equivalent-separator", "+"));
+        return;
+      }
+
+      el.appendChild(this.createCurrencyFragment(part.amount, part.slug));
+    });
+
     container.appendChild(el);
   }
 
-  private getCurrencyHtml(amount: number | string, slug: string) {
-    const chaosUrl = "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png?scale=1&w=1&h=1";
-    const divineUrl = "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png?scale=1&w=1&h=1";
-    const iconUrl = slug === this.CHAOS_SLUG ? chaosUrl : divineUrl;
+  private createCurrencyFragment(amount: number | string, slug: string) {
+    const fragment = document.createDocumentFragment();
+    fragment.appendChild(this.createTextSpan("bt-equivalent-amount", String(amount)));
 
-    return `<span class="bt-equivalent-amount">${amount}</span><img src="${iconUrl}" class="bt-equivalent-icon currency-icon" alt="${slug}">`;
+    const icon = document.createElement("img");
+    icon.className = "bt-equivalent-icon currency-icon";
+    icon.alt = slug;
+    icon.src = slug === this.CHAOS_SLUG ? this.CHAOS_ICON_URL : this.DIVINE_ICON_URL;
+    fragment.appendChild(icon);
+
+    return fragment;
+  }
+
+  private createTextSpan(className: string, text: string) {
+    const span = document.createElement("span");
+    span.className = className;
+    span.textContent = text;
+    return span;
   }
 
   private removeEquivalentPricing(row: HTMLElement) {

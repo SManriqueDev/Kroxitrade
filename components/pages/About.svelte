@@ -1,19 +1,5 @@
 <script lang="ts">
   const version = chrome.runtime.getManifest().version
-
-  const foundations = [
-    {
-      label: "better-trading",
-      href: "https://github.com/exile-center/better-trading",
-      description: "Core reference and technical foundation for several trade workflow improvements."
-    },
-    {
-      label: "poe-trade-plus",
-      href: "https://github.com/KroxiLabs/poe-trade-plus/",
-      description:
-        "Another major foundation for this project. That work is itself based on the original script by Maxime B and Fuzzy."
-    }
-  ]
 </script>
 
 <section class="about-page">
@@ -24,8 +10,6 @@
       Kroxitrade is a companion for Path of Exile Trade built to save searches, organize folders, and make
       the official trade site easier to use.
     </p>
-    <p class="credit">Developed by JaViJeC.</p>
-    <div class="version-pill">Version {version}</div>
   </header>
 
   <section class="card">
@@ -36,28 +20,21 @@
     </p>
   </section>
 
-  <section class="card">
-    <h2>Foundation and Credits</h2>
-    <p>
-      Kroxitrade is based on open source work that helped shape this version and preserve the spirit of
-      community trade tooling.
+  <footer class="about-footer">
+    <p class="about-footer__credit">
+      Based on <a href="https://github.com/exile-center/better-trading" target="_blank" rel="noreferrer"><strong>better-trading</strong></a>
+      and <a href="https://github.com/KroxiLabs/poe-trade-plus/" target="_blank" rel="noreferrer"><strong>poe-trade-plus</strong></a>.
     </p>
-
-    <div class="foundation-list">
-      {#each foundations as foundation}
-        <a class="foundation" href={foundation.href} target="_blank" rel="noreferrer">
-          <span class="foundation__title">{foundation.label}</span>
-          <span class="foundation__description">{foundation.description}</span>
-        </a>
-      {/each}
-    </div>
-  </section>
+    <p class="about-footer__meta">Version {version} • Developed by JaViJeC</p>
+  </footer>
 </section>
 
 <style>
   .about-page {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 14px;
+    min-height: 100%;
     color: #d8c7a7;
   }
 
@@ -92,18 +69,18 @@
   }
 
   h1 {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   h2 {
     margin-bottom: 8px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   p {
     margin: 8px 0 0;
     color: #cbb694;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.55;
   }
 
@@ -111,57 +88,33 @@
     color: #dfc592;
   }
 
-  .version-pill {
-    display: inline-flex;
-    margin-top: 12px;
-    padding: 5px 9px;
-    border: 1px solid rgba(184, 138, 71, 0.24);
-    background: rgba(26, 29, 39, 0.7);
-    color: #f4e3bf;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  .about-footer {
+    margin-top: auto;
+    padding: 4px 4px 0;
   }
 
-  .foundation-list {
-    display: grid;
-    gap: 8px;
-    margin-top: 12px;
+  .about-footer__credit,
+  .about-footer__meta {
+    margin-top: 0;
+    font-size: 10px;
+    line-height: 1.45;
+    color: rgba(203, 182, 148, 0.58);
   }
 
-  .foundation {
-    display: grid;
-    gap: 3px;
-    padding: 10px 12px;
-    border: 1px solid rgba(171, 129, 68, 0.16);
-    background: linear-gradient(180deg, rgba(24, 21, 18, 0.94), rgba(13, 12, 11, 0.98));
-    color: inherit;
+  .about-footer__credit a {
+    color: rgba(240, 224, 191, 0.82);
     text-decoration: none;
-    transition:
-      transform 120ms ease,
-      border-color 120ms ease,
-      background 120ms ease;
   }
 
-  .foundation:hover,
-  .foundation:focus-visible {
-    transform: translateY(-1px);
-    border-color: rgba(232, 192, 122, 0.32);
-    background: linear-gradient(180deg, rgba(29, 24, 19, 0.96), rgba(15, 13, 12, 0.99));
+  .about-footer__credit a:hover,
+  .about-footer__credit a:focus-visible {
+    color: #f0e0bf;
+    text-decoration: underline;
     outline: none;
   }
 
-  .foundation__title {
-    color: #f0e0bf;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .foundation__description {
-    color: #c8b28f;
-    font-size: 11px;
-    line-height: 1.45;
+  .about-footer__meta {
+    margin-top: 4px;
+    color: rgba(203, 182, 148, 0.44);
   }
 </style>

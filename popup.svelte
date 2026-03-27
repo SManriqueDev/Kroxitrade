@@ -11,6 +11,7 @@
       href: "https://www.pathofexile.com/trade2/search/poe2"
     }
   ]
+
 </script>
 
 <svelte:head>

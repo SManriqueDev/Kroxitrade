@@ -16,6 +16,11 @@ body.bt-has-kroxitrade-sidebar {
   }
 }
 
+body.bt-has-kroxitrade-sidebar.bt-sidebar-minimized {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 /* Fix for Path of Exile fixed elements */
 .bt-has-kroxitrade-sidebar .top-bar-container,
 .bt-has-kroxitrade-sidebar .header,
@@ -29,6 +34,14 @@ body.bt-has-kroxitrade-sidebar {
     right: var(--bt-sidebar-width, 360px) !important;
     transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
   }
+}
+
+.bt-sidebar-minimized .top-bar-container,
+.bt-sidebar-minimized .header,
+.bt-sidebar-minimized .contents>.search-bar {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
 }
 
 plasmo-csui {
@@ -96,6 +109,11 @@ plasmo-csui {
   margin-right: 4px;
   color: rgba(163, 141, 109, 0.58);
   text-transform: lowercase;
+}
+
+.bt-equivalent-separator {
+  margin: 0 3px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .bt-equivalent-amount {

@@ -17,7 +17,7 @@
 
   const MIN_SIDEBAR_WIDTH = 300;
   const MAX_SIDEBAR_WIDTH = 560;
-  const MINIMIZED_WIDTH = 40;
+  const MINIMIZED_WIDTH = 0;
 
   const clampSidebarWidth = (value: number) =>
     Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, Math.round(value)));
@@ -97,6 +97,8 @@
       document.body.classList.toggle('is-side-right', isRight);
       document.body.classList.toggle('is-side-left', !isRight);
       document.documentElement.classList.toggle('bt-side-right', isRight);
+      document.body.classList.toggle('bt-sidebar-minimized', isMinimized);
+      document.documentElement.classList.toggle('bt-sidebar-minimized', isMinimized);
       document.body.classList.toggle('bt-is-resizing-sidebar', isResizing);
 
       // Target all possible plasmo host containers and apply direct styles for extra robustness
