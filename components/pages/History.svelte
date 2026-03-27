@@ -4,25 +4,42 @@
   import { openUrlInActiveTab } from "../../lib/services/active-trade-tab";
   import { flashMessages } from "../../lib/services/flash";
   import { getTradeUrl } from "../../lib/utilities/trade-url";
-  import type { TradeLocationHistoryStruct } from "../../lib/types/trade-location";
+  import type { TradeLocationHistoryStruct, TradeSiteVersion } from "../../lib/types/trade-location";
 
   import Button from "../Button.svelte";
   import LoadingContainer from "../LoadingContainer.svelte";
   import AlertMessage from "../AlertMessage.svelte";
 
   let historyEntries: TradeLocationHistoryStruct[] = [];
+  let filteredEntries: TradeLocationHistoryStruct[] = [];
   let isLoading = false;
+  let currentVersion: TradeSiteVersion = "1";
 
-  onMount(async () => {
-    await fetchHistory();
-    const unsubscribe = tradeLocationService.onChange(() => void fetchHistory());
-    return unsubscribe;
+  onMount(() => {
+    // Sync current version from the active tab/location
+    const unsubscribeLocation = tradeLocationService.locationStore.subscribe(loc => {
+      currentVersion = loc.version;
+      applyFilter();
+    });
+
+    void fetchHistory();
+    const unsubscribeHistory = tradeLocationService.onChange(() => void fetchHistory());
+    
+    return () => {
+      unsubscribeLocation();
+      unsubscribeHistory();
+    };
   });
 
   const fetchHistory = async () => {
     isLoading = true;
     historyEntries = await tradeLocationService.fetchHistory();
+    applyFilter();
     isLoading = false;
+  };
+
+  const applyFilter = () => {
+    filteredEntries = historyEntries.filter(entry => entry.version === currentVersion);
   };
 
   const clearHistory = async () => {
@@ -40,9 +57,9 @@
 
 <div class="history-page">
   <LoadingContainer {isLoading} size="large">
-    {#if historyEntries.length > 0}
+    {#if filteredEntries.length > 0}
       <ul class="history-list">
-        {#each historyEntries as entry (entry.id)}
+        {#each filteredEntries as entry (entry.id)}
           <li class="history-item">
             <a
                 class="history-link"
@@ -64,7 +81,7 @@
           class="clear-button"
       />
     {:else}
-      <AlertMessage type="warning" message="History is empty." />
+      <AlertMessage type="warning" message="History is empty for PoE {currentVersion}." />
     {/if}
   </LoadingContainer>
 </div>

@@ -92,9 +92,13 @@
 
   <div class="flash-messages">
     {#each $flashMessages as flash (flash.id)}
-      <div class="flash flash-{flash.type}" on:click={() => flashMessages.remove(flash.id)}>
+      <button 
+        class="flash flash-{flash.type}" 
+        on:click={() => flashMessages.remove(flash.id)}
+        aria-label="Remove alert"
+      >
         {flash.message}
-      </div>
+      </button>
     {/each}
   </div>
 
@@ -273,6 +277,9 @@
     border-radius: 4px;
     cursor: pointer;
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    background: none;
+    text-align: left;
+    outline: none;
 
     &-success { background-color: $green; border: 1px solid color.adjust($green, $lightness: 10%); }
     &-alert { background-color: $red; border: 1px solid color.adjust($red, $lightness: 10%); }
@@ -294,10 +301,62 @@
     box-sizing: border-box;
   }
 
-  main > :global(*) {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    box-sizing: border-box;
+  .floating-restore-btn {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 60px;
+    background: $poe-black;
+    border: 1px solid $poe-gray;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2147483647;
+    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.4);
+    padding: 0;
+    outline: none;
+
+    &:hover {
+      background: color.adjust($poe-black, $lightness: 5%);
+      border-color: $gold;
+      width: 48px;
+      
+      .chev-icon {
+        color: $gold;
+        transform: scale(1.2);
+      }
+    }
+
+    &.side-right {
+      left: auto;
+      right: 0;
+      border-left: 1px solid $poe-gray;
+      border-right: none;
+      border-radius: 8px 0 0 8px;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.4);
+
+      &:hover {
+        width: 48px;
+      }
+    }
+
+    .floater-logo {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 2px;
+    }
+
+    .chev-icon {
+      font-size: 12px;
+      color: rgba($white, 0.4);
+      transition: all 0.2s ease;
+    }
   }
 </style>
