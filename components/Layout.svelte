@@ -107,9 +107,23 @@
     }
   }
 
+  .flash-messages {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+
   .flash {
+    pointer-events: auto;
     padding: 10px;
-    margin: 5px;
+    margin: 0;
     color: $white;
     font-size: 13px;
     border-radius: 4px;
