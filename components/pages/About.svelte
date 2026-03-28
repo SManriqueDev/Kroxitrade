@@ -21,11 +21,7 @@
   </section>
 
   <footer class="about-footer">
-    <p class="about-footer__credit">
-      Based on <a href="https://github.com/exile-center/better-trading" target="_blank" rel="noreferrer"><strong>better-trading</strong></a>
-      and <a href="https://github.com/KroxiLabs/poe-trade-plus/" target="_blank" rel="noreferrer"><strong>poe-trade-plus</strong></a>.
-    </p>
-    <p class="about-footer__meta">Version {version} • Developed by JaViJeC</p>
+    <p class="about-footer__meta">Version {version} • Developed by KroxiLabs</p>
   </footer>
 </section>
 
