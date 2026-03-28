@@ -1,17 +1,28 @@
 <script lang="ts">
+  import { onMount } from "svelte"
+  import { languageStore, setLanguage, translate, type AppLanguage } from "./lib/services/i18n"
+  import { settings } from "./lib/services/settings"
   const tradeLinks = [
     {
-      label: "PoE 1 Trade",
-      hint: "Official Path of Exile trade",
-      href: "https://www.pathofexile.com/trade/search"
+      href: "https://www.pathofexile.com/trade/search",
+      logo: poe1Logo,
+      logoAltKey: "popup.trade1Alt",
+      labelKey: "popup.trade1"
     },
     {
-      label: "PoE 2 Trade",
-      hint: "Official Path of Exile 2 trade",
-      href: "https://www.pathofexile.com/trade2/search/poe2"
+      href: "https://www.pathofexile.com/trade2/search/poe2",
+      logo: poe2Logo,
+      logoAltKey: "popup.trade2Alt",
+      labelKey: "popup.trade2"
     }
   ]
+  import poe1Logo from "data-base64:./assets/logo-trade.webp"
+  import poe2Logo from "data-base64:./assets/logo-trade2.webp"
 
+  onMount(async () => {
+    await settings.load()
+    setLanguage(($settings.language || "en") as AppLanguage)
+  })
 </script>
 
 <svelte:head>
@@ -20,16 +31,16 @@
 
 <div class="popup-shell">
   <div class="hero">
-    <div class="eyebrow">Kroxitrade</div>
-    <h1>Trade Shortcuts</h1>
-    <p>Open the official trade page you need and continue from there.</p>
+    <p>{translate($languageStore, "popup.description")}</p>
   </div>
 
   <div class="trade-grid">
     {#each tradeLinks as link}
       <a class="trade-link" href={link.href} target="_blank" rel="noreferrer">
-        <span class="trade-link__label">{link.label}</span>
-        <span class="trade-link__hint">{link.hint}</span>
+        <span class="trade-link__logo-wrap">
+          <img class="trade-link__logo" src={link.logo} alt={translate($languageStore, link.logoAltKey)} />
+        </span>
+        <span class="trade-link__label">{translate($languageStore, link.labelKey)}</span>
       </a>
     {/each}
   </div>
@@ -52,25 +63,9 @@
 
   .hero {
     margin-bottom: 10px;
-    padding: 12px 14px;
-    border: 1px solid rgba(173, 132, 72, 0.22);
-    background: linear-gradient(180deg, rgba(23, 20, 17, 0.95), rgba(12, 11, 10, 0.97));
-    box-shadow: inset 0 1px 0 rgba(255, 226, 178, 0.06);
-  }
-
-  .eyebrow {
-    margin-bottom: 6px;
-    color: #d4ad65;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  h1 {
-    margin: 0 0 4px;
-    color: #f5e6c5;
-    font-size: 17px;
-    font-weight: 700;
+    padding: 10px 12px;
+    border: 1px solid rgba(173, 132, 72, 0.18);
+    background: linear-gradient(180deg, rgba(23, 20, 17, 0.9), rgba(12, 11, 10, 0.95));
   }
 
   p {
@@ -87,8 +82,11 @@
 
   .trade-link {
     flex: 1 1 0;
-    display: block;
-    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 10px;
     border: 1px solid rgba(188, 145, 77, 0.16);
     background: linear-gradient(180deg, rgba(24, 21, 18, 0.94), rgba(14, 13, 12, 0.98));
     color: inherit;
@@ -107,6 +105,22 @@
     outline: none;
   }
 
+  .trade-link__logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    width: 100%;
+  }
+
+  .trade-link__logo {
+    display: block;
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+    max-width: 100%;
+  }
+
   .trade-link__label {
     display: block;
     color: #f1e1bf;
@@ -114,13 +128,6 @@
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-  }
-
-  .trade-link__hint {
-    display: block;
-    margin-top: 2px;
-    color: #bda886;
-    font-size: 10px;
-    line-height: 1.3;
+    text-align: center;
   }
 </style>

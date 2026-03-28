@@ -1,31 +1,22 @@
 <script lang="ts">
+  import { languageStore, translate } from "../../lib/services/i18n";
   const version = chrome.runtime.getManifest().version
 </script>
 
 <section class="about-page">
   <header class="hero">
-    <div class="eyebrow">About</div>
+    <div class="eyebrow">{translate($languageStore, "about.eyebrow")}</div>
     <h1>Kroxitrade</h1>
     <p>
-      Kroxitrade is a companion for Path of Exile Trade built to save searches, organize folders, and make
-      the official trade site easier to use.
+      {translate($languageStore, "about.description")}
     </p>
   </header>
 
-  <section class="card">
-    <h2>Project</h2>
-    <p>
-      Kroxitrade is designed to keep trade management fast and visual, with an emphasis on recurring
-      searches, pinned trades, and history tracking in a lightweight workflow.
-    </p>
-  </section>
-
   <footer class="about-footer">
     <p class="about-footer__credit">
-      Based on <a href="https://github.com/exile-center/better-trading" target="_blank" rel="noreferrer"><strong>better-trading</strong></a>
-      and <a href="https://github.com/KroxiLabs/poe-trade-plus/" target="_blank" rel="noreferrer"><strong>poe-trade-plus</strong></a>.
+      {translate($languageStore, "about.github")} <a href="https://github.com/KroxiLabs/Kroxitrade" target="_blank" rel="noreferrer"><strong>better-trading</strong></a>
     </p>
-    <p class="about-footer__meta">Version {version} • Developed by JaViJeC</p>
+    <p class="about-footer__meta">{translate($languageStore, "about.version", { version })}</p>
   </footer>
 </section>
 
@@ -49,10 +40,6 @@
     padding: 16px;
   }
 
-  .card {
-    padding: 14px 16px;
-  }
-
   .eyebrow {
     margin-bottom: 6px;
     color: #b88a47;
@@ -61,8 +48,7 @@
     text-transform: uppercase;
   }
 
-  h1,
-  h2 {
+  h1 {
     margin: 0;
     color: #f1dfbe;
     font-weight: 700;
@@ -70,11 +56,6 @@
 
   h1 {
     font-size: 20px;
-  }
-
-  h2 {
-    margin-bottom: 8px;
-    font-size: 14px;
   }
 
   p {
