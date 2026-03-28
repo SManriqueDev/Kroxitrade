@@ -5,7 +5,8 @@ const { spawnSync } = require("child_process")
 const rootDir = path.join(__dirname, "..")
 const packageJsonPath = path.join(rootDir, "package.json")
 const buildDir = path.join(rootDir, "build")
-const prodDir = path.join(buildDir, "chrome-mv3-prod")
+const target = process.argv[2] || "chrome-mv3-prod"
+const prodDir = path.join(buildDir, target)
 
 if (!fs.existsSync(packageJsonPath)) {
   throw new Error("package.json not found")
@@ -19,7 +20,8 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"))
 const displayName = String(packageJson.displayName || packageJson.name || "extension").trim()
 const version = String(packageJson.version || "0.0.0").trim()
 const safeName = displayName.replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-").replace(/\s+/g, " ").trim()
-const zipName = `${safeName}-${version}.zip`
+const targetSuffix = target === "chrome-mv3-prod" ? "" : `-${target}`
+const zipName = `${safeName}-${version}${targetSuffix}.zip`
 const zipPath = path.join(buildDir, zipName)
 
 if (fs.existsSync(zipPath)) {

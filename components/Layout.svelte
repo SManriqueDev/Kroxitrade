@@ -1,4 +1,9 @@
 <script lang="ts">
+  import bookmarkIcon from "data-text:lucide-static/icons/bookmark.svg";
+  import clockIcon from "data-text:lucide-static/icons/history.svg";
+  import infoIcon from "data-text:lucide-static/icons/info.svg";
+  import layersIcon from "data-text:lucide-static/icons/layers-3.svg";
+  import settingsIcon from "data-text:lucide-static/icons/settings-2.svg";
   import Header from "./Header.svelte";
   import Bookmarks from "./pages/Bookmarks.svelte";
   import BulkSellers from "./pages/BulkSellers.svelte";
@@ -26,6 +31,24 @@
 
   const getExpandedSidebarWidth = () => clampSidebarWidth($settings.sidebarWidth || 360);
   const getRenderedSidebarWidth = () => clampSidebarWidth(liveSidebarWidth ?? getExpandedSidebarWidth());
+  const normalizeNavIcon = (svg: string) =>
+    svg
+      .replace(/<svg\b([^>]*)>/, (_match, attrs) => {
+        const cleaned = attrs
+          .replace(/\s(width|height|stroke-width|class|aria-hidden)="[^"]*"/g, "")
+          .trim();
+        const nextAttrs = cleaned ? `${cleaned} ` : "";
+        return `<svg ${nextAttrs} viewBox="-2 -2 28 28" class="nav-svg" aria-hidden="true">`;
+      })
+      .replace(/stroke-width="[^"]*"/g, 'stroke-width="1.75"');
+
+  const navIcons = {
+    bookmarks: normalizeNavIcon(bookmarkIcon),
+    bulk: normalizeNavIcon(layersIcon),
+    history: normalizeNavIcon(clockIcon),
+    settings: normalizeNavIcon(settingsIcon),
+    about: normalizeNavIcon(infoIcon)
+  };
 
   const toggleMinimize = () => {
     isMinimized = !isMinimized;
@@ -147,7 +170,8 @@
         class="nav-item {currentPage === 'bookmarks' ? 'is-active' : ''}" 
         on:click={() => currentPage = 'bookmarks'}
     >
-        {translate($languageStore, "layout.nav.bookmarks")}
+        <span class="nav-item__icon" aria-hidden="true">{@html navIcons.bookmarks}</span>
+        <span class="nav-item__label">{translate($languageStore, "layout.nav.bookmarks")}</span>
     </button>
 
     {#if $settings.showBulkSellers}
@@ -155,7 +179,8 @@
           class="nav-item {currentPage === 'bulk' ? 'is-active' : ''}" 
           on:click={() => currentPage = 'bulk'}
       >
-          {translate($languageStore, "layout.nav.bulk")}
+          <span class="nav-item__icon" aria-hidden="true">{@html navIcons.bulk}</span>
+          <span class="nav-item__label">{translate($languageStore, "layout.nav.bulk")}</span>
       </button>
     {/if}
 
@@ -163,19 +188,22 @@
         class="nav-item {currentPage === 'history' ? 'is-active' : ''}" 
         on:click={() => currentPage = 'history'}
     >
-        {translate($languageStore, "layout.nav.history")}
+        <span class="nav-item__icon" aria-hidden="true">{@html navIcons.history}</span>
+        <span class="nav-item__label">{translate($languageStore, "layout.nav.history")}</span>
     </button>
     <button 
         class="nav-item {currentPage === 'settings' ? 'is-active' : ''}" 
         on:click={() => currentPage = 'settings'}
     >
-        {translate($languageStore, "layout.nav.settings")}
+        <span class="nav-item__icon" aria-hidden="true">{@html navIcons.settings}</span>
+        <span class="nav-item__label">{translate($languageStore, "layout.nav.settings")}</span>
     </button>
     <button 
         class="nav-item {currentPage === 'about' ? 'is-active' : ''}" 
         on:click={() => currentPage = 'about'}
     >
-        {translate($languageStore, "layout.nav.about")}
+        <span class="nav-item__icon" aria-hidden="true">{@html navIcons.about}</span>
+        <span class="nav-item__label">{translate($languageStore, "layout.nav.about")}</span>
     </button>
   </nav>
 
@@ -400,6 +428,11 @@
 
   .nav-item {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
     padding: 11px 4px 10px;
     background: transparent;
     border: 0;
@@ -416,6 +449,31 @@
         border-bottom-color: $gold;
         background-color: rgba($white, 0.04);
     }
+  }
+
+  .nav-item__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    color: currentColor;
+  }
+
+  .nav-item__icon :global(.nav-svg) {
+    width: 14px;
+    height: 14px;
+    display: block;
+    stroke: currentColor;
+    fill: none;
+  }
+
+  .nav-item__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .flash-messages {
