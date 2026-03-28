@@ -29,23 +29,21 @@
     
     <div class="side-selector">
       <Button 
-        label="Left Side" 
+        label="Left" 
         theme={$settings.sidebarSide === 'left' ? 'gold' : 'blue'}
         class="side-btn"
         onClick={() => handleSideChange('left')}
       />
       <Button 
-        label="Right Side" 
+        label="Right" 
         theme={$settings.sidebarSide === 'right' ? 'gold' : 'blue'}
         class="side-btn"
         onClick={() => handleSideChange('right')}
       />
-    </div>
-
-    <div class="settings-inline-action">
       <Button
-        label={`RESET WIDTH (${$settings.sidebarWidth || DEFAULT_SIDEBAR_WIDTH}px)`}
+        label={`RESET WIDTH`}
         theme="blue"
+        class="side-btn reset-btn"
         onClick={handleSidebarWidthReset}
       />
     </div>
@@ -71,10 +69,6 @@
     </div>
   </section>
 
-  <section class="settings-section info">
-    <h3 class="section-title">About Settings</h3>
-    <p class="section-description">These settings are saved locally in your browser and will persist across sessions.</p>
-  </section>
 </div>
 
 <style lang="scss">
@@ -126,14 +120,15 @@
   .side-selector {
     display: flex;
     gap: 10px;
-  }
-
-  .settings-inline-action {
-    margin-top: 12px;
-    display: flex;
+    flex-wrap: wrap;
   }
 
   :global(.side-btn) {
     flex: 1;
+    min-width: 0;
+  }
+
+  :global(.reset-btn) {
+    flex: 1.35;
   }
 </style>
