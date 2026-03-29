@@ -118,7 +118,7 @@ The unpacked production extension is generated in `build/chrome-mv3-prod`.
 npm run package
 ```
 
-This command creates a zip file in `build/` such as `Poe Trade Plus-1.0.58.zip`, using the contents of `build/chrome-mv3-prod`.
+This command creates a zip file in `build/` such as `Poe Trade Plus.zip`, using the contents of `build/chrome-mv3-prod`.
 
 ## Permissions and Integrations
 
