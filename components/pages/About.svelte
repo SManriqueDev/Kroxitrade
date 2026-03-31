@@ -16,7 +16,7 @@
 
   <footer class="about-footer">
     <p class="about-footer__credit">
-      {translate($languageStore, "about.github")} <a href="https://github.com/KroxiLabs/poe-trade-plus" target="_blank" rel="noreferrer"><strong>Poe Trade Plus</strong></a>
+      {translate($languageStore, "about.github")} <a href="https://github.com/KroxiLabs/Kroxitrade" target="_blank" rel="noreferrer"><strong>Poe Trade Plus</strong></a>
     </p>
     <p class="about-footer__meta">{translate($languageStore, "about.version", { version })}</p>
   </footer>
