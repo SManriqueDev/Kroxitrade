@@ -2,7 +2,10 @@
   <img src="assets/logo.webp" alt="Poe Trade Plus Logo" width="120" />
   <h1>Poe Trade Plus Companion</h1>
   <p><em>Browser extension for a faster, cleaner Path of Exile Trade workflow</em></p>
-    [<img src="assets/chrome-button.webp" alt="Available in the Chrome Web Store" width="248" height="75" />](https://chromewebstore.google.com/detail/poe-trade-plus/igofmcebdienfacijkhdppcfiglcbffb)
+  
+  <a href="https://chromewebstore.google.com/detail/poe-trade-plus/igofmcebdienfacijkhdppcfiglcbffb">
+    <img src="assets/chrome-button.webp" alt="Available in the Chrome Web Store" width="248" height="75" />
+  </a>
 </div>
 
 ---
