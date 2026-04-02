@@ -75,14 +75,15 @@ export class ItemResultsService {
   }
 
   private injectEquivalentPricing(row: HTMLElement) {
-    this.removeEquivalentPricing(row);
-
-    if (!this.showEquivalentPricing || !this.chaosRatios) return;
-
     // Busca explícitamente el div con class "price" como pidió el usuario
     const priceContainer = row.querySelector("div.price, .details .price") as HTMLElement;
     if (!priceContainer) {
         console.debug("[Poe Trade Plus] Skipping pricing injection - Missing priceContainer for row", row);
+        return;
+    }
+
+    if (!this.chaosRatios) {
+        this.removeEquivalentPricing(row);
         return;
     }
 
@@ -108,6 +109,7 @@ export class ItemResultsService {
     const amount = parseFloat(amountText);
 
     if (!currencyText || isNaN(amount)) {
+        this.removeEquivalentPricing(row);
         console.debug("[Poe Trade Plus] Skipping pricing injection - Missing details:", { currency: currencyText, amount: amountText, html: priceContainer.innerHTML });
         return;
     }
@@ -115,6 +117,7 @@ export class ItemResultsService {
     const slug = slugify(currencyText);
     const ratio = this.chaosRatios[slug];
     const divineRatio = this.chaosRatios[this.DIVINE_SLUG];
+    const parts: Array<{ amount: number | string; slug: string } | { separator: true }> = [];
 
     if (slug === this.DIVINE_SLUG && ratio) {
         // Original price is Divine, e.g. 1.4 Divines
@@ -123,24 +126,21 @@ export class ItemResultsService {
         const remainderFraction = amount - wholeDivines;
         const remainderChaos = Math.round(remainderFraction * ratio);
 
-        const parts: Array<number | string | { separator: true; }> = [];
         if (wholeDivines > 0 && remainderChaos > 0) {
-            parts.push({ amount: wholeDivines, slug: this.DIVINE_SLUG } as any);
+            parts.push({ amount: wholeDivines, slug: this.DIVINE_SLUG });
             parts.push({ separator: true });
-            parts.push({ amount: remainderChaos, slug: this.CHAOS_SLUG } as any);
+            parts.push({ amount: remainderChaos, slug: this.CHAOS_SLUG });
         } else if (wholeDivines === 0 && remainderChaos > 0) {
-            parts.push({ amount: remainderChaos, slug: this.CHAOS_SLUG } as any);
+            parts.push({ amount: remainderChaos, slug: this.CHAOS_SLUG });
         } else {
-            parts.push({ amount: totalChaos, slug: this.CHAOS_SLUG } as any);
+            parts.push({ amount: totalChaos, slug: this.CHAOS_SLUG });
         }
-        this.appendEquivHtml(priceContainer, parts as Array<{ amount: number | string; slug: string } | { separator: true }>);
 
     } else if (slug === this.CHAOS_SLUG && divineRatio && amount >= divineRatio * 0.5) {
         // Original price is Chaos, e.g. 195 Chaos
         const wholeDivines = Math.floor(amount / divineRatio);
         const remainderChaos = Math.round(amount % divineRatio);
 
-        const parts: Array<{ amount: number | string; slug: string } | { separator: true }> = [];
         if (wholeDivines > 0) {
             parts.push({ amount: wholeDivines, slug: this.DIVINE_SLUG });
             if (remainderChaos > 0) {
@@ -152,23 +152,32 @@ export class ItemResultsService {
             const fraction = (amount / divineRatio).toFixed(1);
             parts.push({ amount: fraction, slug: this.DIVINE_SLUG });
         }
-        this.appendEquivHtml(priceContainer, parts);
 
     } else if (slug !== this.CHAOS_SLUG && slug !== this.DIVINE_SLUG && ratio) {
         // Other currencies (like Exalted orbs). Just show total chaos equivalent.
         const chaosEquiv = Math.round(amount * ratio);
-        this.appendEquivHtml(priceContainer, [{ amount: chaosEquiv, slug: this.CHAOS_SLUG }]);
+        parts.push({ amount: chaosEquiv, slug: this.CHAOS_SLUG });
     } else {
+        this.removeEquivalentPricing(row);
         console.debug(`[Poe Trade Plus] Could not determine equivalence for ${amountText} ${currencyText} (slug: ${slug})`);
+        return;
     }
+
+    this.renderEquivalentPricing(priceContainer, parts);
   }
 
-  private appendEquivHtml(
+  private renderEquivalentPricing(
     container: HTMLElement,
     parts: Array<{ amount: number | string; slug: string } | { separator: true }>
   ) {
-    const el = document.createElement("span");
-    el.className = "bt-equivalent-pricings bt-equivalent-pricings-equivalent";
+    let el = container.querySelector(".bt-equivalent-pricings-equivalent") as HTMLElement | null;
+    if (!el) {
+      el = document.createElement("span");
+      el.className = "bt-equivalent-pricings bt-equivalent-pricings-equivalent";
+      container.appendChild(el);
+    }
+
+    el.replaceChildren();
     el.appendChild(this.createTextSpan("bt-equivalent-label", "equivalent:"));
 
     parts.forEach((part) => {
@@ -179,8 +188,7 @@ export class ItemResultsService {
 
       el.appendChild(this.createCurrencyFragment(part.amount, part.slug));
     });
-
-    container.appendChild(el);
+    this.syncEquivalentVisibility(el);
   }
 
   private createCurrencyFragment(amount: number | string, slug: string) {
@@ -205,6 +213,11 @@ export class ItemResultsService {
 
   private removeEquivalentPricing(row: HTMLElement) {
     row.querySelectorAll(".bt-equivalent-pricings-equivalent").forEach((el) => el.remove());
+  }
+
+  private syncEquivalentVisibility(element: HTMLElement) {
+    element.classList.toggle("is-hidden", !this.showEquivalentPricing);
+    element.setAttribute("aria-hidden", String(!this.showEquivalentPricing));
   }
 
   private prepareHighlighting() {
