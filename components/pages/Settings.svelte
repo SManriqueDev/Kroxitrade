@@ -225,13 +225,13 @@
 
     <div class="side-selector">
       <Button
-        label={translate($languageStore, "settings.hidden")}
+        label={translate($languageStore, "settings.compactActionsDefault")}
         theme={$settings.compactActionsMenu ? 'blue' : 'gold'}
         class="side-btn"
         onClick={() => handleCompactActionsMenuChange(false)}
       />
       <Button
-        label={translate($languageStore, "settings.visible")}
+        label={translate($languageStore, "settings.compactActionsCompact")}
         theme={$settings.compactActionsMenu ? 'gold' : 'blue'}
         class="side-btn"
         onClick={() => handleCompactActionsMenuChange(true)}
