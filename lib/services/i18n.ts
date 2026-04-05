@@ -55,6 +55,9 @@ const translations = {
     "settings.historyTitle": "History",
     "settings.historyDescription":
       "Show or hide the history tab that stores your recently opened searches.",
+    "settings.finerFiltersTitle": "Add To Filters",
+    "settings.finerFiltersDescription":
+      "Show or hide the Add to Filters panel at the bottom of the sidebar.",
     "settings.hidden": "Hidden",
     "settings.visible": "Visible",
     "settings.compactActionsTitle": "Bookmark Layout",
@@ -191,6 +194,9 @@ const translations = {
     "settings.historyTitle": "Historial",
     "settings.historyDescription":
       "Mostrá u ocultá la pestaña Historial que guarda tus búsquedas abiertas recientemente.",
+    "settings.finerFiltersTitle": "Agregar a filtros",
+    "settings.finerFiltersDescription":
+      "Mostrá u ocultá el panel Agregar a filtros al final de la barra lateral.",
     "settings.hidden": "Oculto",
     "settings.visible": "Visible",
     "settings.compactActionsTitle": "Diseño de Favoritos",

@@ -10,6 +10,7 @@ export interface AppSettings {
   showEquivalentPricing: boolean;
   showBulkSellers: boolean;
   showHistory: boolean;
+  showFinerFilters: boolean;
   sidebarWidth: number;
   language: AppLanguage;
   compactActionsMenu: boolean;
@@ -21,6 +22,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   showEquivalentPricing: false,
   showBulkSellers: false,
   showHistory: true,
+  showFinerFilters: true,
   sidebarWidth: 360,
   language: 'en',
   compactActionsMenu: false,
@@ -78,6 +80,13 @@ export const settings = {
   async updateHistoryVisibility(showHistory: boolean) {
     update(s => {
       const next = { ...s, showHistory };
+      save(next);
+      return next;
+    });
+  },
+  async updateFinerFiltersVisibility(showFinerFilters: boolean) {
+    update(s => {
+      const next = { ...s, showFinerFilters };
       save(next);
       return next;
     });

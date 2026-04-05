@@ -264,7 +264,9 @@
     {/if}
   </main>
 
-  <FinerFilters />
+  {#if $settings.showFinerFilters}
+    <FinerFilters />
+  {/if}
 </div>
 
 {#if isMinimized}

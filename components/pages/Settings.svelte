@@ -81,6 +81,10 @@
     await settings.updateHistoryVisibility(showHistory);
   }
 
+  async function handleFinerFiltersChange(showFinerFilters: boolean) {
+    await settings.updateFinerFiltersVisibility(showFinerFilters);
+  }
+
   async function handleCompactActionsMenuChange(compactActionsMenu: boolean) {
     await settings.updateCompactActionsMenu(compactActionsMenu);
   }
@@ -334,6 +338,37 @@
         theme={$settings.showHistory ? 'gold' : 'blue'}
         class="side-btn"
         onClick={() => handleHistoryChange(true)}
+      />
+    </div>
+  </section>
+
+  <section class="settings-section">
+    <div class="section-heading">
+      <h3 class="section-title">{translate($languageStore, "settings.finerFiltersTitle")}</h3>
+      <div class="info-tooltip">
+        <button
+          type="button"
+          class="info-tooltip__trigger"
+          aria-label={translate($languageStore, "settings.finerFiltersDescription")}
+        >
+          i
+        </button>
+        <div class="info-tooltip__content">{translate($languageStore, "settings.finerFiltersDescription")}</div>
+      </div>
+    </div>
+
+    <div class="side-selector">
+      <Button
+        label={translate($languageStore, "settings.hidden")}
+        theme={$settings.showFinerFilters ? 'blue' : 'gold'}
+        class="side-btn"
+        onClick={() => handleFinerFiltersChange(false)}
+      />
+      <Button
+        label={translate($languageStore, "settings.visible")}
+        theme={$settings.showFinerFilters ? 'gold' : 'blue'}
+        class="side-btn"
+        onClick={() => handleFinerFiltersChange(true)}
       />
     </div>
   </section>
