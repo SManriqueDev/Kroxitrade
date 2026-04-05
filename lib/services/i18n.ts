@@ -60,6 +60,8 @@ const translations = {
       "Show or hide the Add to Filters panel at the bottom of the sidebar.",
     "settings.hidden": "Hidden",
     "settings.visible": "Visible",
+    "settings.on": "On",
+    "settings.off": "Off",
     "settings.compactActionsTitle": "Bookmark Layout",
     "settings.compactActionsDescription":
       "Choose a more compact layout for saved searches, with the league name and all actions grouped inside a three-dot menu.",
@@ -199,6 +201,8 @@ const translations = {
       "Mostrá u ocultá el panel Agregar a filtros al final de la barra lateral.",
     "settings.hidden": "Oculto",
     "settings.visible": "Visible",
+    "settings.on": "On",
+    "settings.off": "Off",
     "settings.compactActionsTitle": "Diseño de Favoritos",
     "settings.compactActionsDescription":
       "Elegí un diseño más compacto para las búsquedas guardadas, con el nombre de la liga y todas las acciones agrupadas dentro de un menú de tres puntos.",
