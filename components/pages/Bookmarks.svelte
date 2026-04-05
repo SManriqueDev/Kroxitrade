@@ -261,7 +261,7 @@
 </script>
 
 <div class="bookmarks-page" data-tutorial="bookmarks-panel">
-  <section class="toolbar-panel">
+  <section class="toolbar-panel" data-tutorial="bookmarks-toolbar">
     <div class="toolbar-row">
       <div class="toolbar-actions">
         <button class="toolbar-button" data-tutorial="new-folder" type="button" title={translate($languageStore, "bookmarks.toolbar.newFolderTitle")} aria-label={translate($languageStore, "bookmarks.toolbar.newFolderTitle")} on:click={createFolder}>

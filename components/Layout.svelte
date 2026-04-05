@@ -21,7 +21,7 @@
   import { storageService } from "../lib/services/storage";
   import { tradeLocationService } from "../lib/services/trade-location";
   import type { BookmarksFolderStruct, BookmarksTradeStruct } from "../lib/types/bookmarks";
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy, onMount, tick } from "svelte";
   
   const MINIMIZED_STORAGE_KEY = "layout-minimized";
   const WELCOME_SEEN_KEY = "layout-welcome-seen";
@@ -213,10 +213,12 @@
 
   const openOnboarding = async () => {
     await ensureTutorialArtifacts();
-    showOnboarding = true;
+    currentPage = 'bookmarks';
     onboardingHighlightedPage = 'bookmarks';
     onboardingCurrentStepId = 'create-folder';
-    currentPage = 'bookmarks';
+    await tick();
+    await tick();
+    showOnboarding = true;
   };
 
   const confirmWelcome = async () => {

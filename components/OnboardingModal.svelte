@@ -52,8 +52,7 @@
     {
       id: "create-folder" as OnboardingStepId,
       page: "bookmarks" as OnboardingPage,
-      targetSelector: '[data-tutorial="new-folder"]',
-      fallbackSelector: '[data-tutorial="bookmarks-panel"]',
+      targetSelector: '[data-tutorial="bookmarks-toolbar"]',
       preferredPlacement: "below",
       eyebrow: translate($languageStore, "onboarding.step1Eyebrow"),
       title: translate($languageStore, "onboarding.step1Title"),
@@ -68,7 +67,6 @@
       id: "save-search" as OnboardingStepId,
       page: "bookmarks" as OnboardingPage,
       targetSelector: '[data-tutorial="save-search"]',
-      fallbackSelector: '[data-tutorial="new-folder"]',
       preferredPlacement: "below",
       eyebrow: translate($languageStore, "onboarding.step2Eyebrow"),
       title: translate($languageStore, "onboarding.step2Title"),
@@ -243,7 +241,7 @@
     if (!container || !target) {
       targetFound = false
       highlightStyle = ""
-      coachmarkStyle = "left: 10px; top: 10px; width: min(272px, calc(100% - 20px)); --pointer-left: 28px"
+      coachmarkStyle = ""
       return
     }
 
