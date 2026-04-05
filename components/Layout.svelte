@@ -248,6 +248,9 @@
   ) => {
     onboardingHighlightedPage = page;
     onboardingCurrentStepId = stepId;
+    if (stepId === 'history') {
+      void cleanupTutorialArtifacts();
+    }
     if (page === 'bulk' && !$settings.showBulkSellers) return;
     if (page === 'history' && !$settings.showHistory) return;
     currentPage = page;
