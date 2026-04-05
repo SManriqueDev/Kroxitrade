@@ -418,6 +418,10 @@
           })}
         </span>
         <div class="onboarding-actions">
+          <Button
+            label={translate($languageStore, "onboarding.skip")}
+            theme="blue"
+            onClick={onClose} />
           {#if currentStep > 0}
             <Button
               label={translate($languageStore, "onboarding.back")}
