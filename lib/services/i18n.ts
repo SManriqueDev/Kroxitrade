@@ -110,6 +110,14 @@ const translations = {
     "bookmarks.backupTitle": "Backup & Restore",
     "bookmarks.saveFile": "Save File",
     "bookmarks.restoreFile": "Restore From File",
+    "confirm.cancel": "Cancel",
+    "confirm.delete": "Delete",
+    "confirm.deleteFolderTitle": "Delete folder?",
+    "confirm.deleteFolderMessage": ({ title }) =>
+      `This will permanently delete "${title}" and all saved trades inside it.`,
+    "confirm.deleteTradeTitle": "Delete saved trade?",
+    "confirm.deleteTradeMessage": ({ title }) =>
+      `This will permanently delete "${title}" from the folder.`,
     "history.clear": "Clear History",
     "history.cleared": "History cleared!",
     "history.empty": ({ version }) => `History is empty for PoE ${version}.`,
@@ -253,6 +261,14 @@ const translations = {
     "bookmarks.backupTitle": "Respaldo y restauración",
     "bookmarks.saveFile": "Guardar archivo",
     "bookmarks.restoreFile": "Restaurar desde archivo",
+    "confirm.cancel": "Cancelar",
+    "confirm.delete": "Eliminar",
+    "confirm.deleteFolderTitle": "¿Eliminar carpeta?",
+    "confirm.deleteFolderMessage": ({ title }) =>
+      `Esto eliminará permanentemente "${title}" y todos los trades guardados dentro.`,
+    "confirm.deleteTradeTitle": "¿Eliminar trade guardado?",
+    "confirm.deleteTradeMessage": ({ title }) =>
+      `Esto eliminará permanentemente "${title}" de la carpeta.`,
     "history.clear": "Borrar historial",
     "history.cleared": "¡Historial borrado!",
     "history.empty": ({ version }) =>

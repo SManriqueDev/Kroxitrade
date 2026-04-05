@@ -22,6 +22,7 @@
   import { normalizeIcon } from "../lib/utilities/icons"
   import { formatLeagueLabel } from "../lib/utilities/league"
   import Button from "./Button.svelte"
+  import ConfirmDialog from "./ConfirmDialog.svelte"
   import FolderActionsMenu from "./FolderActionsMenu.svelte"
   import LoadingContainer from "./LoadingContainer.svelte"
   import TradeActionsMenu from "./TradeActionsMenu.svelte"
@@ -48,6 +49,7 @@
   let isLoading = false
   let hasLoadedTrades = false
   let isDuplicating = false
+  let tradePendingDelete: BookmarksTradeStruct | null = null
 
   $: isExpanded = expandedFolderIds.includes(folder.id || "")
   $: isArchived = !!folder.archivedAt
@@ -125,9 +127,18 @@
     try {
       await bookmarksService.deleteTrade(trade.id, folder.id)
       await loadTrades()
+      tradePendingDelete = null
     } catch {
       flashMessages.alert(translate($languageStore, "folder.deleteTradeError"))
     }
+  }
+
+  const requestTradeDelete = (trade: BookmarksTradeStruct) => {
+    tradePendingDelete = trade
+  }
+
+  const cancelTradeDelete = () => {
+    tradePendingDelete = null
   }
 
   const duplicateTrade = async (trade: BookmarksTradeStruct) => {
@@ -487,7 +498,7 @@
                         onCopy={() => copyTrade(trade)}
                         onOpenLive={() => void openTradeLive(trade)}
                         onToggle={() => void toggleTrade(trade)}
-                        onDelete={() => void deleteTrade(trade)} />
+                        onDelete={() => requestTradeDelete(trade)} />
                     </div>
                   {/if}
                 </div>
@@ -502,7 +513,7 @@
                         onCopy={() => copyTrade(trade)}
                         onOpenLive={() => void openTradeLive(trade)}
                         onToggle={() => void toggleTrade(trade)}
-                        onDelete={() => void deleteTrade(trade)} />
+                        onDelete={() => requestTradeDelete(trade)} />
                     </div>
                   </div>
                 {/if}
@@ -520,6 +531,21 @@
     </div>
   {/if}
 </div>
+
+<ConfirmDialog
+  open={!!tradePendingDelete}
+  title={translate($languageStore, "confirm.deleteTradeTitle")}
+  message={translate($languageStore, "confirm.deleteTradeMessage", {
+    title: tradePendingDelete?.title || ""
+  })}
+  confirmLabel={translate($languageStore, "confirm.delete")}
+  cancelLabel={translate($languageStore, "confirm.cancel")}
+  onCancel={cancelTradeDelete}
+  onConfirm={() => {
+    if (tradePendingDelete) {
+      void deleteTrade(tradePendingDelete)
+    }
+  }} />
 
 <style lang="scss">
   @use "../lib/styles/variables" as *;
