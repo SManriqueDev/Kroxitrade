@@ -512,7 +512,7 @@
     margin-bottom: 10px;
     border: 1px solid rgba($gold, 0.12);
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
     background: linear-gradient(180deg, rgba($gold, 0.035), rgba($gold, 0.015)),
       rgba($black, 0.4);
     box-shadow:
@@ -556,6 +556,7 @@
     color: $white;
     font-family: $primary-font;
     border-bottom: 1px solid rgba($gold, 0.1);
+    border-radius: 8px 8px 0 0;
   }
 
   .folder-drag-handle {
@@ -878,6 +879,7 @@
 
   .trades-content {
     background: rgba($black, 0.24);
+    border-radius: 0 0 8px 8px;
   }
 
   .footer-actions {
