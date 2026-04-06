@@ -33,7 +33,7 @@
     {
       id: "rename",
       icon: icons.edit,
-      labelKey: "folder.renameFolder",
+      labelKey: "folder.editFolder",
       handler: onRename
     },
     {

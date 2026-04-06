@@ -8,6 +8,10 @@
     openUrlInActiveTab
   } from "../lib/services/active-trade-tab"
   import { bookmarksService } from "../lib/services/bookmarks"
+  import {
+    bookmarkFolderIconOptions,
+    getBookmarkFolderIconUrl
+  } from "../lib/data/bookmark-folder-icons"
   import { flashMessages } from "../lib/services/flash"
   import { languageStore, translate } from "../lib/services/i18n"
   import { searchPanelService } from "../lib/services/search-panel"
@@ -300,23 +304,40 @@
 
   let editingFolder = false
   let folderEditTitle = ""
+  let folderEditIcon: string | null = null
   let isSavingFolderTitle = false
+  $: visibleFolderIconOptions = bookmarkFolderIconOptions.filter(
+    (option) => option.version === folder.version
+  )
+  $: folderIconUrl = getBookmarkFolderIconUrl(folder.icon)
+  $: folderEditIconUrl = getBookmarkFolderIconUrl(folderEditIcon)
 
   const startEditingFolder = () => {
     folderEditTitle = folder.title
+    folderEditIcon = folder.icon
     editingFolder = true
   }
 
   const saveFolderTitle = async () => {
     if (isSavingFolderTitle) return
-    editingFolder = false
     const newTitle = folderEditTitle.trim()
-    if (!newTitle || newTitle === folder.title) return
+    const iconChanged = folderEditIcon !== folder.icon
+    if (!newTitle) return
+    if (newTitle === folder.title && !iconChanged) {
+      editingFolder = false
+      return
+    }
 
     isSavingFolderTitle = true
     try {
-      await bookmarksService.renameFolder(folder, newTitle)
+      await bookmarksService.persistFolder({
+        ...folder,
+        title: newTitle,
+        icon: folderEditIcon
+      })
       folder.title = newTitle
+      folder.icon = folderEditIcon
+      editingFolder = false
       flashMessages.success(
         translate($languageStore, "folder.renamedFolder", { title: newTitle })
       )
@@ -327,6 +348,8 @@
 
   const cancelFolderEdit = () => {
     editingFolder = false
+    folderEditTitle = folder.title
+    folderEditIcon = folder.icon
   }
 
   let editingTradeId: string | null = null
@@ -433,7 +456,6 @@
           type="text"
           class="inline-edit-input"
           bind:value={folderEditTitle}
-          on:blur={saveFolderTitle}
           on:keydown={(e) => {
             if (e.key === "Enter") saveFolderTitle()
             if (e.key === "Escape") cancelFolderEdit()
@@ -442,6 +464,11 @@
       {:else}
         <div class="header-copy">
           <div class="header-main">
+            {#if folderIconUrl}
+              <span class="folder-icon" aria-hidden="true">
+                <img src={folderIconUrl} alt="" />
+              </span>
+            {/if}
             <div class="header-label">{folder.title}</div>
           </div>
         </div>
@@ -461,6 +488,58 @@
         onDelete={onDeleteEvent} />
     </div>
   </div>
+
+  {#if editingFolder}
+    <div class="folder-edit-panel">
+      <div class="folder-edit-panel__top">
+        <button
+          type="button"
+          class="folder-icon-option folder-icon-option--clear"
+          class:is-selected={!folderEditIcon}
+          on:click={() => (folderEditIcon = null)}
+        >
+          <span class="folder-icon-option__empty">{translate($languageStore, "folder.noIcon")}</span>
+        </button>
+
+        {#each visibleFolderIconOptions as option (option.id)}
+          <button
+            type="button"
+            class="folder-icon-option"
+            class:is-selected={folderEditIcon === option.id}
+            title={option.label}
+            aria-label={option.label}
+            on:click={() => (folderEditIcon = option.id)}
+          >
+            <img src={option.url} alt="" />
+          </button>
+        {/each}
+      </div>
+
+      <div class="folder-edit-panel__actions">
+        <div class="folder-edit-panel__preview">
+          {#if folderEditIconUrl}
+            <span class="folder-icon folder-icon--preview" aria-hidden="true">
+              <img src={folderEditIconUrl} alt="" />
+            </span>
+          {/if}
+          <span class="folder-edit-panel__label">{translate($languageStore, "folder.chooseIcon")}</span>
+        </div>
+
+        <div class="folder-edit-panel__buttons">
+          <Button
+            label={translate($languageStore, "confirm.cancel")}
+            theme="blue"
+            onClick={cancelFolderEdit}
+          />
+          <Button
+            label={translate($languageStore, "folder.saveFolderChanges")}
+            theme="gold"
+            onClick={saveFolderTitle}
+          />
+        </div>
+      </div>
+    </div>
+  {/if}
 
   {#if isExpanded}
     <div class="trades-content" transition:slide={{ duration: 180 }}>
@@ -685,6 +764,31 @@
     min-width: 0;
   }
 
+  .folder-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    overflow: hidden;
+    border-radius: 4px;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+
+  .folder-icon--preview {
+    width: 20px;
+    height: 20px;
+    flex-basis: 20px;
+  }
+
   .header-label {
     flex: 1;
     font-family: "Fontin", serif;
@@ -743,6 +847,101 @@
     flex-shrink: 0;
     padding-left: 8px;
     border-left: 1px solid rgba($white, 0.06);
+  }
+
+  .folder-edit-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    border-top: 1px solid rgba($white, 0.06);
+    background: rgba($black, 0.22);
+  }
+
+  .folder-edit-panel__top {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    gap: 6px;
+  }
+
+  .folder-icon-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 30px;
+    padding: 4px;
+    border: 1px solid rgba($white, 0.08);
+    border-radius: 4px;
+    background: rgba($black, 0.28);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+
+    img {
+      display: block;
+      width: 20px;
+      height: 20px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 3px;
+    }
+
+    &:hover {
+      border-color: rgba($gold, 0.26);
+      background: rgba($white, 0.05);
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      border-color: rgba($gold, 0.3);
+      box-shadow:
+        0 0 0 1px rgba($gold, 0.18),
+        0 0 0 3px rgba($gold, 0.08);
+    }
+
+    &.is-selected {
+      border-color: rgba($gold, 0.42);
+      background: rgba($gold, 0.08);
+    }
+  }
+
+  .folder-icon-option--clear {
+    padding: 4px 6px;
+  }
+
+  .folder-icon-option__empty {
+    font-family: $primary-font;
+    font-size: 9px;
+    color: rgba($white, 0.75);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .folder-edit-panel__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .folder-edit-panel__preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .folder-edit-panel__label {
+    color: rgba($white, 0.72);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .folder-edit-panel__buttons {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
   }
 
   .folder-action {
