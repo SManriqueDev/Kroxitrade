@@ -592,6 +592,7 @@
     border: 1px solid rgba($gold, 0.12);
     border-radius: 8px;
     overflow: visible;
+    font-family: $primary-font;
     background: linear-gradient(180deg, rgba($gold, 0.035), rgba($gold, 0.015)),
       rgba($black, 0.4);
     box-shadow:
@@ -691,6 +692,7 @@
 
   .header-label {
     flex: 1;
+    font-family: "Fontin", serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.02em;
