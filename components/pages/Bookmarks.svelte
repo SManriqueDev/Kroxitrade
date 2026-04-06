@@ -60,6 +60,7 @@
   $: displayedFolders = versionFolders.filter(
     (folder) => !!folder.archivedAt === showArchived
   );
+  $: isEmptyState = !isLoading && displayedFolders.length === 0;
   $: displayedFolderIndexById = new Map(
     displayedFolders.map((folder, index) => [folder.id, index])
   );
@@ -410,24 +411,49 @@
 
   <LoadingContainer {isLoading}>
     <div class="folders-list">
-      {#each displayedFolders as folder (folder.id)}
-        <div class="folder-shell" animate:flip={{ duration: 180 }}>
-          <BookmarkFolder 
-              {folder} 
-              isExpanded={expandedFolderIds.includes(folder.id || "")}
-              isTutorialSaveTarget={tutorialStep === "save-search" && folder.id === tutorialTargetFolderId}
-              onToggleExpansion={toggleExpansion}
-              onArchiveEvent={() => toggleArchive(folder)}
-               onDeleteEvent={() => requestFolderDelete(folder)}
-              onFolderDragStart={handleFolderDragStart}
-              onFolderDragEnter={handleFolderDragEnter}
-              onFolderDrop={handleFolderDrop}
-              onFolderDragEnd={handleFolderDragEnd}
-              isFolderDragging={draggedFolderId === folder.id}
-              isFolderDragOver={dragOverFolderId === folder.id}
-          />
-        </div>
-      {/each}
+      {#if isEmptyState}
+        <section class="empty-state">
+          <div class="empty-state-eyebrow">{translate($languageStore, "bookmarks.emptyEyebrow")}</div>
+          <h3 class="empty-state-title">
+            {translate($languageStore, showArchived ? "bookmarks.emptyArchivedTitle" : "bookmarks.emptyTitle")}
+          </h3>
+          <p class="empty-state-description">
+            {translate($languageStore, showArchived ? "bookmarks.emptyArchivedDescription" : "bookmarks.emptyDescription")}
+          </p>
+          <div class="empty-state-actions">
+            {#if showArchived}
+              <Button
+                label={translate($languageStore, "bookmarks.emptyArchivedAction")}
+                theme="gold"
+                onClick={() => showArchived = false} />
+            {:else}
+              <Button
+                label={translate($languageStore, "bookmarks.toolbar.newFolderTitle")}
+                theme="gold"
+                onClick={createFolder} />
+            {/if}
+          </div>
+        </section>
+      {:else}
+        {#each displayedFolders as folder (folder.id)}
+          <div class="folder-shell" animate:flip={{ duration: 180 }}>
+            <BookmarkFolder 
+                {folder} 
+                isExpanded={expandedFolderIds.includes(folder.id || "")}
+                isTutorialSaveTarget={tutorialStep === "save-search" && folder.id === tutorialTargetFolderId}
+                onToggleExpansion={toggleExpansion}
+                onArchiveEvent={() => toggleArchive(folder)}
+                 onDeleteEvent={() => requestFolderDelete(folder)}
+                onFolderDragStart={handleFolderDragStart}
+                onFolderDragEnter={handleFolderDragEnter}
+                onFolderDrop={handleFolderDrop}
+                onFolderDragEnd={handleFolderDragEnd}
+                isFolderDragging={draggedFolderId === folder.id}
+                isFolderDragOver={dragOverFolderId === folder.id}
+            />
+          </div>
+        {/each}
+      {/if}
     </div>
   </LoadingContainer>
 
@@ -690,6 +716,49 @@
     margin: 2px 0;
     width: 100%;
     min-width: 0;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px;
+    padding: 16px 14px;
+    border: 1px dashed rgba($gold, 0.18);
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, rgba($gold, 0.05), rgba($gold, 0.015)),
+      rgba($black, 0.28);
+  }
+
+  .empty-state-eyebrow {
+    font-family: $primary-font;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba($gold-alt, 0.82);
+  }
+
+  .empty-state-title {
+    margin: 0;
+    font-family: "Fontin", serif;
+    font-size: 18px;
+    line-height: 1.15;
+    color: rgba($white, 0.96);
+  }
+
+  .empty-state-description {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba($white, 0.74);
+  }
+
+  .empty-state-actions {
+    display: flex;
+    padding-top: 2px;
   }
 
 

@@ -242,6 +242,14 @@ const translations = {
     "bookmarks.importPlaceholder": "Paste folder text here...",
     "bookmarks.importHint":
       "Use the full export string from a previously exported folder.",
+    "bookmarks.emptyEyebrow": "Bookmarks",
+    "bookmarks.emptyTitle": "Create your first folder",
+    "bookmarks.emptyDescription":
+      "Save your most-used trade searches in folders so you can reopen them quickly later.",
+    "bookmarks.emptyArchivedTitle": "No archived folders yet",
+    "bookmarks.emptyArchivedDescription":
+      "Archived folders will appear here when you move them out of your active bookmarks list.",
+    "bookmarks.emptyArchivedAction": "Show active folders",
     "bookmarks.confirmImport": "Confirm Import",
     "bookmarks.backupTitle": "Backup & Restore",
     "bookmarks.saveFile": "Save File",
@@ -531,6 +539,14 @@ const translations = {
     "bookmarks.importPlaceholder": "Pegá acá el texto de la carpeta...",
     "bookmarks.importHint":
       "Usá la cadena completa que se exportó previamente desde una carpeta.",
+    "bookmarks.emptyEyebrow": "Favoritos",
+    "bookmarks.emptyTitle": "Creá tu primera carpeta",
+    "bookmarks.emptyDescription":
+      "Guardá tus búsquedas de trade más usadas en carpetas para reabrirlas rápido cuando las necesites.",
+    "bookmarks.emptyArchivedTitle": "Todavía no hay carpetas archivadas",
+    "bookmarks.emptyArchivedDescription":
+      "Las carpetas archivadas van a aparecer acá cuando las saques de tu lista activa de favoritos.",
+    "bookmarks.emptyArchivedAction": "Mostrar carpetas activas",
     "bookmarks.confirmImport": "Confirmar importación",
     "bookmarks.backupTitle": "Respaldo y restauración",
     "bookmarks.saveFile": "Guardar archivo",
