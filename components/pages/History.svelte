@@ -68,7 +68,12 @@
                 on:click|preventDefault={() => void openHistoryEntry(entry)}
             >
               <div class="history-title">{entry.title}</div>
-              <div class="history-meta">{entry.league} • {new Date(entry.createdAt).toLocaleString()}</div>
+              <div class="history-meta">
+                {entry.league} • {new Intl.DateTimeFormat($languageStore, {
+                  dateStyle: "short",
+                  timeStyle: "short"
+                }).format(new Date(entry.createdAt))}
+              </div>
             </a>
           </li>
         {/each}
@@ -109,6 +114,11 @@
     color: $white;
     text-decoration: none;
     overflow: hidden;
+
+    &:focus-visible {
+      background: rgba($gold, 0.08);
+      box-shadow: inset 0 0 0 1px rgba($gold, 0.24);
+    }
   }
 
   .history-title { font-size: 14px; font-weight: bold; overflow-wrap: anywhere; }

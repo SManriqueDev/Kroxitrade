@@ -658,7 +658,13 @@
     color: inherit;
     text-align: left;
     width: 100%;
-    outline: none;
+    
+    &:focus-visible {
+      border-radius: 4px;
+      box-shadow:
+        0 0 0 1px rgba($gold, 0.22),
+        0 0 0 3px rgba($gold, 0.1);
+    }
   }
 
   .header-copy {
@@ -687,10 +693,9 @@
     font-size: 14px;
     padding: 2px 6px;
     border-radius: 2px;
-    outline: none;
     margin-right: 8px;
 
-    &:focus {
+    &:focus-visible {
       border-color: $gold;
       box-shadow: 0 0 0 1px rgba($gold, 0.2);
     }

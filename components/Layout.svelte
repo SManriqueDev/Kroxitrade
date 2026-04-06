@@ -376,7 +376,7 @@
     </button>
   </nav>
 
-  <div class="flash-messages">
+  <div class="flash-messages" aria-live="polite" aria-atomic="true">
     {#each $flashMessages as flash (flash.id)}
       <button 
         class="flash flash-{flash.type}" 
@@ -564,7 +564,12 @@
     gap: 8px;
     cursor: pointer;
     box-shadow: 2px 0 10px rgba($black, 0.5);
-    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition:
+      background-color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+      border-color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+      box-shadow 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+      transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+      padding 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     z-index: 2147483647;
     pointer-events: auto;
 
@@ -627,7 +632,11 @@
     font-family: $primary-font;
     font-size: 11px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-bottom-color 0.2s ease,
+      box-shadow 0.2s ease;
     border-bottom: 1px solid transparent;
 
     &:hover { color: $white; }
@@ -635,6 +644,13 @@
         color: $white; 
         border-bottom-color: $gold;
         background-color: rgba($white, 0.04);
+    }
+
+    &:focus-visible {
+      color: $white;
+      background-color: rgba($gold, 0.08);
+      border-bottom-color: rgba($gold, 0.72);
+      box-shadow: inset 0 0 0 1px rgba($gold, 0.22);
     }
 
     &.is-onboarding-focus {
@@ -706,11 +722,22 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     background: none;
     text-align: left;
-    outline: none;
+    border: 1px solid transparent;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
 
-    &-success { background-color: $green; border: 1px solid color.adjust($green, $lightness: 10%); }
-    &-alert { background-color: $red; border: 1px solid color.adjust($red, $lightness: 10%); }
-    &-info { background-color: $blue; border: 1px solid color.adjust($blue, $lightness: 10%); }
+    &:focus-visible {
+      border-color: rgba($white, 0.88);
+      box-shadow:
+        0 0 0 1px rgba($black, 0.48),
+        0 0 0 3px rgba($white, 0.18);
+    }
+
+    &-success { background-color: $green; border-color: color.adjust($green, $lightness: 10%); }
+    &-alert { background-color: $red; border-color: color.adjust($red, $lightness: 10%); }
+    &-info { background-color: $blue; border-color: color.adjust($blue, $lightness: 10%); }
   }
 
   main {
@@ -769,10 +796,13 @@
     justify-content: center;
     cursor: pointer;
     z-index: 2147483647;
-    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition:
+      background-color 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+      border-color 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+      box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+      width 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     box-shadow: 2px 0 8px rgba(0,0,0,0.4);
     padding: 0;
-    outline: none;
 
     &:hover {
       background: color.adjust($poe-black, $lightness: 5%);
@@ -783,6 +813,13 @@
         color: $gold;
         transform: scale(1.2);
       }
+    }
+
+    &:focus-visible {
+      border-color: rgba($gold, 0.8);
+      box-shadow:
+        0 0 0 1px rgba($gold, 0.26),
+        0 0 0 3px rgba($gold, 0.14);
     }
 
     &.side-right {
@@ -807,7 +844,21 @@
     .chev-icon {
       font-size: 12px;
       color: rgba($white, 0.4);
-      transition: all 0.2s ease;
+      transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #kroxitrade-container,
+    .resize-handle::after,
+    .resize-handle::before,
+    .floating-restore-btn,
+    .floating-restore-btn .chev-icon,
+    .nav-item,
+    .flash {
+      transition: none !important;
     }
   }
 </style>

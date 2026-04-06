@@ -388,7 +388,6 @@
             <textarea 
               bind:value={importText} 
               placeholder={translate($languageStore, "bookmarks.importPlaceholder")}
-              autofocus
             ></textarea>
             <div class="import-actions">
               <Button label={translate($languageStore, "bookmarks.confirmImport")} theme="gold" onClick={processTextImport} />
@@ -675,10 +674,11 @@
           font-size: 11px;
           padding: 8px;
           resize: vertical;
-          outline: none;
-
-          &:focus {
+          &:focus-visible {
               border-color: $gold;
+              box-shadow:
+                0 0 0 1px rgba($gold, 0.24),
+                0 0 0 3px rgba($gold, 0.1);
            }
        }
    }

@@ -310,6 +310,7 @@
         <span class="toggle-switch">
           <span class="toggle-switch__thumb"></span>
         </span>
+        <span class="toggle-state">{toggleSwitchLabel($settings.showEquivalentPricing)}</span>
       </button>
     </div>
   </section>
@@ -342,6 +343,7 @@
         <span class="toggle-switch">
           <span class="toggle-switch__thumb"></span>
         </span>
+        <span class="toggle-state">{toggleSwitchLabel($settings.showBulkSellers)}</span>
       </button>
     </div>
   </section>
@@ -374,6 +376,7 @@
         <span class="toggle-switch">
           <span class="toggle-switch__thumb"></span>
         </span>
+        <span class="toggle-state">{toggleSwitchLabel($settings.showHistory)}</span>
       </button>
     </div>
   </section>
@@ -406,6 +409,7 @@
         <span class="toggle-switch">
           <span class="toggle-switch__thumb"></span>
         </span>
+        <span class="toggle-state">{toggleSwitchLabel($settings.showFinerFilters)}</span>
       </button>
     </div>
   </section>
@@ -546,10 +550,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     padding: 0;
     border: none;
     background: transparent;
     cursor: pointer;
+
+    &:focus-visible {
+      .toggle-switch {
+        box-shadow:
+          0 0 0 1px rgba($gold, 0.28),
+          0 0 0 3px rgba($gold, 0.12);
+      }
+
+      .toggle-state {
+        color: $white;
+      }
+    }
   }
 
   .toggle-row--inline {
@@ -585,6 +602,17 @@
     background: rgba($blue-alt, 0.95);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
     transition: transform 0.16s ease, background 0.16s ease;
+  }
+
+  .toggle-state {
+    min-width: 28px;
+    color: rgba($white, 0.68);
+    font-family: $primary-font;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: right;
+    text-transform: uppercase;
   }
 
   .toggle-row.is-active .toggle-switch__thumb {
@@ -649,9 +677,7 @@
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    outline: none;
-
-    &:focus {
+    &:focus-visible {
       border-color: rgba($gold, 0.45);
       background: rgba($gold, 0.08);
       color: $gold;
@@ -787,6 +813,12 @@
     font-weight: 700;
     line-height: 1;
     cursor: help;
+
+    &:focus-visible {
+      box-shadow:
+        0 0 0 1px rgba($gold, 0.28),
+        0 0 0 3px rgba($gold, 0.12);
+    }
   }
 
   .info-tooltip__content {
@@ -865,6 +897,13 @@
       transform: translateY(-1px);
     }
 
+    &:focus-within {
+      border-color: rgba($gold, 0.5);
+      box-shadow:
+        0 0 0 1px rgba($gold, 0.2),
+        0 0 0 3px rgba($gold, 0.1);
+    }
+
     &.is-selected {
       border-color: rgba($gold, 0.38);
       background: rgba(54, 42, 28, 0.96);
@@ -900,6 +939,19 @@
 
     .toggle-row--inline {
       width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .settings-page,
+    .toggle-switch,
+    .toggle-switch__thumb,
+    .language-select,
+    .language-menu__item,
+    .info-tooltip__content,
+    .compact-option {
+      animation: none !important;
+      transition: none !important;
     }
   }
 </style>
