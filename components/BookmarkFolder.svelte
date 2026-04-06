@@ -64,8 +64,6 @@
   $: if (isExpanded && !hasLoadedTrades && !isLoading) {
     void loadTrades()
   }
-  $: loadedTradesCount = hasLoadedTrades ? trades.length : null
-
   const loadTrades = async (force = false) => {
     if (!folder.id) return
     if (!force && (isLoading || hasLoadedTrades)) return
@@ -445,9 +443,6 @@
         <div class="header-copy">
           <div class="header-main">
             <div class="header-label">{folder.title}</div>
-            {#if loadedTradesCount !== null}
-              <span class="header-badge">{loadedTradesCount}</span>
-            {/if}
           </div>
         </div>
       {/if}
@@ -746,11 +741,8 @@
     align-items: center;
     gap: 4px;
     flex-shrink: 0;
-    padding: 4px;
     padding-left: 8px;
     border-left: 1px solid rgba($white, 0.06);
-    border-radius: 999px;
-    background: rgba($black, 0.14);
   }
 
   .folder-action {

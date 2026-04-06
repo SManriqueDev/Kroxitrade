@@ -25,9 +25,18 @@
   let menuRef: HTMLDivElement;
   let isOpen = false;
   let isMounted = false;
+  const OPEN_EVENT_NAME = "poe-trade-plus:actions-menu-open";
 
   const closeMenu = () => (isOpen = false);
-  const toggleMenu = () => (isOpen = !isOpen);
+  const toggleMenu = () => {
+    if (isOpen) {
+      closeMenu();
+      return;
+    }
+
+    document.dispatchEvent(new CustomEvent(OPEN_EVENT_NAME));
+    isOpen = true;
+  };
 
   const handleAction = (handler: () => void) => {
     handler();
@@ -55,16 +64,23 @@
     }
   };
 
+  const handleMenuOpen = () => {
+    if (!isMounted) return;
+    closeMenu();
+  };
+
   onMount(() => {
     isMounted = true;
     document.addEventListener("click", handleClickOutside);
     document.addEventListener("keydown", handleKeydown);
+    document.addEventListener(OPEN_EVENT_NAME, handleMenuOpen);
   });
 
   onDestroy(() => {
     isMounted = false;
     document.removeEventListener("click", handleClickOutside);
     document.removeEventListener("keydown", handleKeydown);
+    document.removeEventListener(OPEN_EVENT_NAME, handleMenuOpen);
   });
 
   $: hasConfiguredVisibility = compactVisibleActionIds !== undefined;
@@ -101,7 +117,6 @@
       : primaryInlineActions.length > 0
       ? actions.filter((action) => !primaryActionIds.includes(action.id))
       : [];
-
   const getDisplayLabel = (action: typeof actions[0]) => {
     if (action.customLabel) return action.customLabel;
     if (translate && action.labelKey) return translate(action.labelKey);
@@ -109,7 +124,7 @@
   };
 </script>
 
-<div class="actions-container">
+<div class="actions-container" class:is-open={isOpen}>
   {#if showAsCompact}
     <div class="actions-inline actions-inline--compact">
       {#if compactText}
@@ -204,6 +219,10 @@
     z-index: 20;
   }
 
+  .actions-container.is-open {
+    z-index: 1200;
+  }
+
   .actions-inline {
     display: flex;
     align-items: center;
@@ -264,12 +283,13 @@
       justify-content: flex-start;
       width: 100%;
       gap: 10px;
-      padding: 8px 10px;
+      padding: 10px 12px;
       border: none;
       background: #0b0b0b;
       border-radius: 4px;
       text-align: left;
       font-size: 12px;
+      line-height: 1.35;
 
       &:hover {
         background-color: #171717;
@@ -297,18 +317,17 @@
   .menu-dropdown {
     position: absolute;
     top: 100%;
-    left: 50%;
-    transform: translateX(-90%);
+    right: 0;
     z-index: 1000;
-    min-width: 160px;
-    margin-top: 4px;
+    min-width: 172px;
+    margin-top: 8px;
     background-color: #0b0b0b;
     opacity: 1;
     border: 1px solid rgba($gold, 0.3);
     border-radius: 6px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
     backdrop-filter: none;
-    padding: 4px;
+    padding: 6px;
     display: flex;
     flex-direction: column;
   }
