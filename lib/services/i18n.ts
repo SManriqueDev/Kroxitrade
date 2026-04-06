@@ -236,7 +236,12 @@ const translations = {
     "bookmarks.toolbar.archive": "Archive",
     "bookmarks.toolbar.showActive": "Show Active",
     "bookmarks.toolbar.showArchived": "Show Archived",
+    "bookmarks.importTitle": "Import folder",
+    "bookmarks.importDescription":
+      "Paste the exported folder text below to restore it as a saved bookmarks folder.",
     "bookmarks.importPlaceholder": "Paste folder text here...",
+    "bookmarks.importHint":
+      "Use the full export string from a previously exported folder.",
     "bookmarks.confirmImport": "Confirm Import",
     "bookmarks.backupTitle": "Backup & Restore",
     "bookmarks.saveFile": "Save File",
@@ -520,7 +525,12 @@ const translations = {
     "bookmarks.toolbar.archive": "Archivo",
     "bookmarks.toolbar.showActive": "Mostrar activas",
     "bookmarks.toolbar.showArchived": "Mostrar archivadas",
+    "bookmarks.importTitle": "Importar carpeta",
+    "bookmarks.importDescription":
+      "Pegá abajo el texto exportado de una carpeta para restaurarla como favoritos guardados.",
     "bookmarks.importPlaceholder": "Pegá acá el texto de la carpeta...",
+    "bookmarks.importHint":
+      "Usá la cadena completa que se exportó previamente desde una carpeta.",
     "bookmarks.confirmImport": "Confirmar importación",
     "bookmarks.backupTitle": "Respaldo y restauración",
     "bookmarks.saveFile": "Guardar archivo",

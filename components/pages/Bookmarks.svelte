@@ -388,10 +388,17 @@
 
         {#if isImportingText}
           <div class="import-text-area">
-            <textarea 
-              bind:value={importText} 
+            <div class="import-copy">
+              <div class="import-title">{translate($languageStore, "bookmarks.importTitle")}</div>
+              <p class="import-description">{translate($languageStore, "bookmarks.importDescription")}</p>
+            </div>
+            <div class="import-field">
+              <textarea
+              bind:value={importText}
               placeholder={translate($languageStore, "bookmarks.importPlaceholder")}
-            ></textarea>
+              ></textarea>
+              <div class="import-hint">{translate($languageStore, "bookmarks.importHint")}</div>
+            </div>
             <div class="import-actions">
               <Button label={translate($languageStore, "bookmarks.confirmImport")} theme="gold" onClick={processTextImport} />
             </div>
@@ -689,21 +696,60 @@
   .import-text-area {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       margin-top: 10px;
-      padding-top: 10px;
+      padding-top: 12px;
       border-top: 1px solid rgba($gold, 0.1);
+      background: linear-gradient(180deg, rgba($gold, 0.04), rgba($gold, 0.01));
+      border-radius: 6px;
+  }
+
+  .import-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+  }
+
+  .import-title {
+      font-family: $primary-font;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: $gold;
+  }
+
+  .import-description,
+  .import-hint {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.4;
+  }
+
+  .import-description {
+      color: rgba($white, 0.76);
+  }
+
+  .import-hint {
+      color: rgba($gold-alt, 0.62);
+  }
+
+  .import-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
 
       textarea {
           width: 100%;
-          height: 100px;
-          background: rgba($black, 0.3);
-          border: 1px solid rgba($gold, 0.2);
-          border-radius: 4px;
+          min-height: 112px;
+          background: rgba($black, 0.38);
+          border: 1px solid rgba($gold, 0.18);
+          border-radius: 6px;
           color: $white;
           font-family: monospace;
           font-size: 11px;
-          padding: 8px;
+          line-height: 1.45;
+          padding: 10px;
           resize: vertical;
           &:focus-visible {
               border-color: $gold;
