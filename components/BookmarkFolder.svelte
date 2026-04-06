@@ -64,6 +64,8 @@
   $: if (isExpanded && !hasLoadedTrades && !isLoading) {
     void loadTrades()
   }
+  $: loadedTradesCount = hasLoadedTrades ? trades.length : null
+
   const loadTrades = async (force = false) => {
     if (!folder.id) return
     if (!force && (isLoading || hasLoadedTrades)) return
@@ -441,7 +443,12 @@
           on:click|stopPropagation />
       {:else}
         <div class="header-copy">
-          <div class="header-label">{folder.title}</div>
+          <div class="header-main">
+            <div class="header-label">{folder.title}</div>
+            {#if loadedTradesCount !== null}
+              <span class="header-badge">{loadedTradesCount}</span>
+            {/if}
+          </div>
         </div>
       {/if}
       {#if !isArchived}
@@ -635,8 +642,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 20px;
-    color: rgba($gold-alt, 0.46);
+    flex: 0 0 18px;
+    color: rgba($gold-alt, 0.34);
     cursor: grab;
     user-select: none;
 
@@ -672,16 +679,42 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
+  }
+
+  .header-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
   }
 
   .header-label {
     flex: 1;
     font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     color: rgba($white, 0.96);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .header-badge {
+    flex: 0 0 auto;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    border: 1px solid rgba($gold, 0.2);
+    background: rgba($black, 0.26);
+    color: rgba($gold-alt, 0.86);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .inline-edit-input {
@@ -711,8 +744,11 @@
     align-items: center;
     gap: 4px;
     flex-shrink: 0;
+    padding: 4px;
     padding-left: 8px;
     border-left: 1px solid rgba($white, 0.06);
+    border-radius: 999px;
+    background: rgba($black, 0.14);
   }
 
   .folder-action {
@@ -960,8 +996,10 @@
   }
 
   .footer-actions {
-    padding: 0 10px 10px;
+    padding: 10px;
     display: flex;
+    border-top: 1px solid rgba($gold, 0.08);
+    background: linear-gradient(180deg, rgba($gold, 0.04), rgba($gold, 0));
   }
 
   .save-search-anchor {
