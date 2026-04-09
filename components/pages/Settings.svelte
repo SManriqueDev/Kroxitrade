@@ -679,6 +679,8 @@
   }
 
   .side-selector--bookmark-layout {
+    display: flex;
+    flex-wrap: nowrap;
     justify-content: center;
     margin-top: 18px;
   }
@@ -767,8 +769,8 @@
   }
 
   :global(.side-btn--bookmark-layout) {
-    flex: 0 1 170px;
-    min-width: 140px;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   :global(.reset-btn) {

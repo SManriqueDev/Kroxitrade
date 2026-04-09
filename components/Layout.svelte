@@ -406,8 +406,10 @@
       </button>
     {/if}
     <button 
-        class="nav-item {currentPage === 'settings' ? 'is-active' : ''} {showOnboarding && onboardingHighlightedPage === 'settings' ? 'is-onboarding-focus' : ''}" 
+        class="nav-item nav-item--settings {currentPage === 'settings' ? 'is-active' : ''} {showOnboarding && onboardingHighlightedPage === 'settings' ? 'is-onboarding-focus' : ''}" 
         data-tutorial="nav-settings"
+        title={translate($languageStore, "layout.nav.settings")}
+        aria-label={translate($languageStore, "layout.nav.settings")}
         on:click={() => currentPage = 'settings'}
     >
         <span class="nav-item__icon" aria-hidden="true">{@html navIcons.settings}</span>
@@ -500,6 +502,7 @@
     background-color: $poe-black;
     display: flex;
     flex-direction: column;
+    container-type: inline-size;
     font-family: $default-font;
     color: $white;
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -809,6 +812,21 @@
     min-width: 32px;
     padding-left: 0;
     padding-right: 0;
+  }
+
+  @container (max-width: 359px) {
+    .nav-item--settings {
+      flex: 0 0 32px;
+      width: 32px;
+      min-width: 32px;
+      gap: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .nav-item--settings .nav-item__label {
+      display: none;
+    }
   }
 
   .flash-messages {
