@@ -462,8 +462,7 @@
     container-type: inline-size;
   }
 
-  .toolbar-panel,
-  .action-section {
+  .toolbar-panel {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -623,30 +622,6 @@
     .toolbar-actions--secondary {
       flex: 1 1 0;
     }
-  }
-
-  .section-heading {
-    font-family: $primary-font;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: $gold;
-    text-transform: uppercase;
-    font-weight: bold;
-    margin-bottom: 8px;
-  }
-
-  .button-row {
-      display: flex;
-      gap: 6px;
-      width: 100%;
-      min-width: 0;
-  }
-
-  .view-controls {
-      display: flex;
-      gap: 6px;
-      width: 100%;
-      min-width: 0;
   }
 
   .folders-list {

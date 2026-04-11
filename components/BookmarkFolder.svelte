@@ -813,23 +813,6 @@ import gripVerticalIcon from "lucide-static/icons/grip-vertical.svg?raw"
     text-overflow: ellipsis;
   }
 
-  .header-badge {
-    flex: 0 0 auto;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: 999px;
-    border: 1px solid rgba($gold, 0.2);
-    background: rgba($black, 0.26);
-    color: rgba($gold-alt, 0.86);
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .inline-edit-input {
     flex: 1;
     width: 0;
@@ -956,37 +939,6 @@ import gripVerticalIcon from "lucide-static/icons/grip-vertical.svg?raw"
     display: flex;
     gap: 6px;
     flex-shrink: 0;
-  }
-
-  .folder-action {
-    width: 24px;
-    height: 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 1px solid rgba($white, 0.14);
-    background-color: rgba($black, 0.22);
-    color: rgba($white, 0.88);
-    font-size: 12px;
-    line-height: 1;
-    cursor: pointer;
-    transition:
-      background-color 120ms ease,
-      border-color 120ms ease,
-      color 120ms ease;
-
-    &:hover {
-      background-color: rgba($white, 0.08);
-      border-color: rgba($gold, 0.38);
-      color: $white;
-    }
-
-    &.is-danger:hover {
-      background-color: rgba($red, 0.18);
-      border-color: rgba($red, 0.5);
-      color: #ffd7d7;
-    }
   }
 
   .action-icon {
@@ -1146,49 +1098,6 @@ import gripVerticalIcon from "lucide-static/icons/grip-vertical.svg?raw"
 
   .trade-actions--compact {
     margin-left: auto;
-  }
-
-  .trade-action {
-    width: 20px;
-    height: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 1px solid rgba($white, 0.12);
-    background-color: rgba($black, 0.45);
-    color: rgba($white, 0.82);
-    font-size: 10px;
-    line-height: 1;
-    cursor: pointer;
-    transition:
-      background-color 120ms ease,
-      border-color 120ms ease,
-      color 120ms ease;
-
-    &:hover {
-      background-color: rgba($white, 0.08);
-      border-color: rgba($gold, 0.38);
-      color: $white;
-    }
-
-    &.is-active {
-      background-color: rgba($green, 0.18);
-      border-color: rgba($green, 0.5);
-      color: #d7ffd7;
-    }
-
-    &.is-danger:hover {
-      background-color: rgba($red, 0.18);
-      border-color: rgba($red, 0.5);
-      color: #ffd7d7;
-    }
-  }
-
-  .check {
-    color: $green;
-    margin-right: 5px;
-    flex: 0 0 auto;
   }
 
   .indicator {
