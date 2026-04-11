@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev": "wxt",
-    "dev:firefox": "wxt -b firefox",
+    "dev:firefox": "node scripts/wxt-firefox-dev.cjs",
     "build:chrome": "node scripts/wxt-runner.cjs build",
     "build:firefox": "node scripts/wxt-runner.cjs build -b firefox",
     "build": "npm run build:chrome && npm run build:firefox",

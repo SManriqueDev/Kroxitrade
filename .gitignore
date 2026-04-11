@@ -32,9 +32,6 @@ out/
 build/
 dist/
 
-# plasmo - https://www.plasmo.com
-.plasmo
-
 # wxt
 .wxt
 

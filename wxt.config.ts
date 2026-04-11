@@ -21,11 +21,22 @@ const iconMap = {
   128: "/icon.png"
 }
 
+const firefoxBinary = process.env.FIREFOX_BINARY
+const useManualFirefoxRunner = process.env.WXT_FIREFOX_MANUAL === "1"
+
 export default defineConfig({
   modules: ["@wxt-dev/module-svelte"],
   srcDir: ".",
   outDir: "build",
   manifestVersion: 3,
+  webExt: {
+    disabled: useManualFirefoxRunner,
+    binaries: firefoxBinary
+      ? {
+          firefox: firefoxBinary
+        }
+      : undefined
+  },
   manifest: ({ browser }) => ({
     name: "Poe Trade Plus",
     description:
@@ -50,6 +61,9 @@ export default defineConfig({
         : undefined
   }),
   vite: () => ({
+    optimizeDeps: {
+      entries: ["entrypoints/popup.html"]
+    },
     resolve: {
       alias: {
         "~": resolve(__dirname),
